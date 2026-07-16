@@ -15,7 +15,7 @@
         --muted: #8294aa;
         --flame: #00a8ff;
         --flame-hot: #7bdcff;
-        --pet-size: 113px;
+        --pet-size: 224px;
         font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         background: var(--void);
         color: var(--text);
@@ -201,7 +201,7 @@
         background-repeat: no-repeat;
         background-size: 800% 1100%;
         filter: drop-shadow(0 16px 15px rgb(0 0 0 / 48%));
-        image-rendering: pixelated;
+        image-rendering: auto;
       }
 
       .frame-line {
@@ -243,7 +243,7 @@
       <aside class="control-deck" aria-label="Pet review controls">
         <header>
           <p class="eyebrow">Native motion review</p>
-          <h1>Black★Rock Shooter</h1>
+          <h1>BLACK★ROCK SHOOTER</h1>
           <p class="intro">Inspect every Codex state at the exact v2 sprite geometry and native size range.</p>
         </header>
 
@@ -254,9 +254,9 @@
           </label>
 
           <label class="field">
-            <span class="field-heading"><span>Pet size</span><span data-testid="size-value">113 px</span></span>
-            <input id="size" aria-label="Pet size" type="range" min="80" max="224" value="113" />
-            <span class="ticks" aria-hidden="true"><span>80</span><span>default 113</span><span>224</span></span>
+            <span class="field-heading"><span>Pet size</span><span data-testid="size-value">224 px</span></span>
+            <input id="size" aria-label="Pet size" type="range" min="80" max="224" value="224" />
+            <span class="ticks" aria-hidden="true"><span>80</span><span>113</span><span>default 224</span></span>
           </label>
         </section>
 
@@ -271,7 +271,7 @@
       <section class="motion-stage" aria-label="Animated pet stage">
         <p class="stage-index">Sprite v2 · 8 × 11</p>
         <div class="pet-frame">
-          <div id="pet" data-testid="pet" data-state="idle" data-frame="0" data-weapon="false" role="img" aria-label="BLACK ROCK SHOOTER idle animation"></div>
+          <div id="pet" data-testid="pet" data-state="idle" data-frame="0" data-weapon="false" role="img" aria-label="BLACK★ROCK SHOOTER idle animation"></div>
           <span class="frame-line" aria-hidden="true"></span>
         </div>
       </section>

@@ -21,8 +21,9 @@ test("switches every native state and reproduces the native size slider", async 
   await expect(state.locator("option")).toHaveCount(STATE_NAMES.length);
   await expect(size).toHaveAttribute("min", "80");
   await expect(size).toHaveAttribute("max", "224");
-  await expect(size).toHaveValue("113");
-  await expect(pet).toHaveCSS("image-rendering", "pixelated");
+  await expect(size).toHaveValue("224");
+  await expect(page.getByTestId("size-value")).toHaveText("224 px");
+  await expect(pet).toHaveCSS("image-rendering", "auto");
   await expect(pet).toHaveCSS("background-size", "800% 1100%");
 
   for (const name of STATE_NAMES) {
@@ -123,7 +124,7 @@ test("captures every state at the native review sizes", async ({ page }) => {
   }
 
   await state.selectOption("idle");
-  await size.fill("113");
+  await size.fill("224");
   await page.screenshot({
     animations: "disabled",
     path: "work/preview-evidence/preview-workbench.png",
