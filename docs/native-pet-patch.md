@@ -1,5 +1,10 @@
 # Native Pet 448px patch
 
+> **Experimental forensic artifact only.** This patch is not part of the
+> production Pet delivery and has never been applied to `/Applications/ChatGPT.app`.
+> The accepted production preview and installed custom Pet remain on Codex's
+> official 80–224px contract (default 113px, pixelated rendering).
+
 This repository contains a version-pinned patcher for Codex `26.707.72221`.
 It extends the floating Pet range from 80–224px to 80–448px without changing
 packed file sizes. The patcher updates all renderer/main-process limits,
@@ -29,12 +34,14 @@ Verification modes are deliberately distinct:
 - `live-safe` requires the exact patched content plus the original trusted
   OpenAI signing/Gatekeeper posture.
 
-`apply` runs `live-safe` before any mutation. The current forensic stage fails
+`apply` first refuses if ChatGPT is running, before inspecting or mutating the
+live, staged, or backup bundle. It then runs `live-safe` before any mutation.
+The current forensic stage fails
 that gate, so the notarized live app remains untouched. If the current app is
 already the exact `live-safe` patched bundle, apply is idempotent and returns
 `reused: true` with no mutation. A current app that passes neither `live-safe`
 nor exact `original` verification is treated as corrupt/unknown and rejected.
-`restore` never quits ChatGPT, refuses while it is running, and rolls back
+`restore` retains the same running-app guard: it never quits ChatGPT, refuses while it is running, and rolls back
 whole-bundle swap failures without hiding rollback errors. Rollback pins and
 restores the exact pre-swap mode and hashes, including a previously live-safe
 patched app.

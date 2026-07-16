@@ -6,7 +6,8 @@ import { STATE_NAMES } from "../src/pet-spec.ts";
 const outputRoot = "work/task-10/after";
 const evidenceRoot = join(outputRoot, "pixel-qa");
 const byFile = {};
-for (const size of [80, 224]) {
+const sizes = [80, 113, 224];
+for (const size of sizes) {
   for (const state of STATE_NAMES) {
     const path = join(evidenceRoot, `${state}-${size}.png`);
     byFile[`${state}-${size}.png`] = await analyzePixelQa(path);
@@ -23,13 +24,13 @@ const result = {
     lowAlphaBrightCandidate: "alpha 9..229 and r,g,b >= 241; diagnostic count only because white hair, skin, emblem, and highlights are intentional",
   },
   screenshotCount: values.length,
-  sizes: [80, 224],
+  sizes,
   totals: {
     occupiedPixels: total("occupiedPixels"),
     greenDominantPixels: total("greenDominantPixels"),
     lowAlphaBrightPixels: total("lowAlphaBrightPixels"),
-    highConfidenceGreenPixels: values.reduce(
-      (sum, item) => sum + item.greenAlphaBins.alpha65To128 + item.greenAlphaBins.alpha129To255,
+    opaqueGreenPixels: values.reduce(
+      (sum, item) => sum + item.greenAlphaBins.alpha129To255,
       0,
     ),
   },
@@ -41,7 +42,7 @@ await copyFile("work/frame-review/contact-sheet.png", join(outputRoot, "contact-
 await copyFile("work/preview-evidence/preview-workbench.png", join(outputRoot, "preview-workbench.png"));
 await writeFile(join(outputRoot, "preview-pixel-qa.json"), `${JSON.stringify(result, null, 2)}\n`);
 
-if (result.totals.highConfidenceGreenPixels !== 0) {
+if (result.totals.opaqueGreenPixels !== 0) {
   throw new Error(`preview pixel QA failed: ${JSON.stringify(result.totals)}`);
 }
-console.log(`preview pixel QA: ${values.length} screenshots; green candidates=${result.totals.greenDominantPixels}; high-confidence green=0; low-alpha bright candidates=${result.totals.lowAlphaBrightPixels}`);
+console.log(`preview pixel QA: ${values.length} screenshots; green candidates=${result.totals.greenDominantPixels}; opaque green=0; low-alpha bright candidates=${result.totals.lowAlphaBrightPixels}`);

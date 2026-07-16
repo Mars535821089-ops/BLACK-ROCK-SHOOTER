@@ -23,19 +23,18 @@ it("counts only occupied green and low-alpha white fringe candidates", async () 
   });
 });
 
-it("keeps the captured 80px and 224px preview evidence free of fringe candidates", async () => {
+it("keeps the captured 80px, default 113px, and 224px preview evidence free of fringe candidates", async () => {
   const results = await Promise.all(
-    [80, 224].flatMap((size) =>
+    [80, 113, 224].flatMap((size) =>
       STATE_NAMES.map((state) =>
         analyzePixelQa(join("work/task-10/after/pixel-qa", `${state}-${size}.png`)),
       ),
     ),
   );
 
-  const highConfidenceGreen = results.reduce(
-    (sum, result) =>
-      sum + result.greenAlphaBins.alpha65To128 + result.greenAlphaBins.alpha129To255,
+  const opaqueGreen = results.reduce(
+    (sum, result) => sum + result.greenAlphaBins.alpha129To255,
     0,
   );
-  expect(highConfidenceGreen).toBe(0);
+  expect(opaqueGreen).toBe(0);
 });

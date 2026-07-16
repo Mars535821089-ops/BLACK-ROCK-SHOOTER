@@ -192,6 +192,11 @@ export class NativePetBundlePatcher {
   }
 
   async apply(appPath: string, stagedPath: string, backupPath: string) {
+    if (await this.backend.isAppRunning()) {
+      throw new Error(
+        "BLOCKED: ChatGPT is running. Quit it manually; the patcher never quits it.",
+      );
+    }
     this.assertDistinctPaths(appPath, stagedPath, backupPath);
     const current = await this.detectTrustedState(appPath);
     if (current.mode === "live-safe") {

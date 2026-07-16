@@ -253,6 +253,37 @@ describe("native Pet bundle CLI semantics", () => {
     expect(backend.mutationCount).toBe(mutations);
   });
 
+  test("apply refuses a running app before any inspection or filesystem mutation", async () => {
+    const { live, stage, backup, backend, patcher } = await fixture();
+    const original = JSON.parse(
+      await readFile(join(live, "bundle-state.json"), "utf8"),
+    );
+    await writeBundle(stage, {
+      ...original,
+      archiveState: "patched",
+      asarHash: expected.patchedAsarHash,
+      headerHash: expected.patchedHeaderHash,
+      recordedHeaderHash: expected.patchedHeaderHash,
+      trust: originalTrust,
+    });
+    const liveBefore = await readFile(join(live, "bundle-state.json"), "utf8");
+    const stageBefore = await readFile(join(stage, "bundle-state.json"), "utf8");
+    backend.running = true;
+
+    await expect(patcher.apply(live, stage, backup)).rejects.toThrow(
+      /ChatGPT is running/i,
+    );
+
+    expect(backend.mutationCount).toBe(0);
+    expect(await readFile(join(live, "bundle-state.json"), "utf8")).toBe(
+      liveBefore,
+    );
+    expect(await readFile(join(stage, "bundle-state.json"), "utf8")).toBe(
+      stageBefore,
+    );
+    await expect(access(backup)).rejects.toThrow();
+  });
+
   test("apply rejects a corrupted current app rather than treating it as original", async () => {
     const { live, stage, backup, backend, patcher } = await fixture();
     const info = JSON.parse(await readFile(join(live, "bundle-state.json"), "utf8"));

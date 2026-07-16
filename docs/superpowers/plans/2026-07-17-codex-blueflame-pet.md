@@ -1,5 +1,11 @@
 # Codex BLACK★ROCK SHOOTER Pet Implementation Plan
 
+> **Historical execution record (2026-07-17):** The unchecked boxes below are
+> preserved verbatim as the original implementation recipe; they are not a live
+> progress tracker. Actual completion and remaining manual acceptance are
+> recorded in `.superpowers/sdd/progress.md` and
+> `docs/verification/2026-07-17-blueflame-pet.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build, install, and verify a selectable Codex custom Pet that matches the approved seven-head anime character design and communicates Codex task state through native v2 sprite animations.

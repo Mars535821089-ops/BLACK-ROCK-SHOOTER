@@ -11,24 +11,25 @@
     "greenCandidate": "g > r + 25 and g > b + 20",
     "lowAlphaBrightCandidate": "alpha 9..229 and r,g,b >= 241; diagnostic count only because white hair, skin, emblem, and highlights are intentional"
   },
-  "screenshotCount": 18,
+  "screenshotCount": 27,
   "sizes": [
     80,
+    113,
     224
   ],
   "totals": {
-    "occupiedPixels": 116724,
-    "greenDominantPixels": 14,
-    "lowAlphaBrightPixels": 7709,
-    "highConfidenceGreenPixels": 0
+    "occupiedPixels": 132664,
+    "greenDominantPixels": 10,
+    "lowAlphaBrightPixels": 12202,
+    "opaqueGreenPixels": 0
   },
   "byFile": {
     "idle-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1530,
+      "occupiedPixels": 1254,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 8,
+      "lowAlphaBrightPixels": 17,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -40,9 +41,9 @@
     "running-right-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1109,
+      "occupiedPixels": 893,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 8,
+      "lowAlphaBrightPixels": 34,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -54,9 +55,9 @@
     "running-left-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1003,
+      "occupiedPixels": 831,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 5,
+      "lowAlphaBrightPixels": 37,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -68,12 +69,12 @@
     "waving-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1727,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 10,
+      "occupiedPixels": 1415,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 38,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 0,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -82,12 +83,12 @@
     "jumping-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1844,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 10,
+      "occupiedPixels": 1563,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 34,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 0,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -96,12 +97,12 @@
     "failed-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1554,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 8,
+      "occupiedPixels": 1275,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 49,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 0,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -110,9 +111,9 @@
     "waiting-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1309,
+      "occupiedPixels": 1090,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 3,
+      "lowAlphaBrightPixels": 25,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -124,9 +125,9 @@
     "running-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 1789,
+      "occupiedPixels": 1470,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 3,
+      "lowAlphaBrightPixels": 37,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -138,9 +139,135 @@
     "review-80.png": {
       "width": 80,
       "height": 88,
-      "occupiedPixels": 2683,
+      "occupiedPixels": 2380,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 597,
+      "lowAlphaBrightPixels": 826,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "idle-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 2555,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 40,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-right-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 1822,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 61,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-left-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 1615,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 67,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waving-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 2859,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 99,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "jumping-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 3146,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 65,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "failed-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 2549,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 90,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waiting-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 2187,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 56,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 2977,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 84,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "review-113.png": {
+      "width": 114,
+      "height": 124,
+      "occupiedPixels": 4743,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 1680,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -152,12 +279,12 @@
     "idle-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 10694,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 103,
+      "occupiedPixels": 10055,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 200,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 0,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -166,12 +293,12 @@
     "running-right-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 7648,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 142,
+      "occupiedPixels": 7109,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 260,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 0,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -180,12 +307,12 @@
     "running-left-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 6880,
-      "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 147,
+      "occupiedPixels": 6383,
+      "greenDominantPixels": 2,
+      "lowAlphaBrightPixels": 268,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
-        "alpha9To32": 1,
+        "alpha9To32": 2,
         "alpha33To64": 0,
         "alpha65To128": 0,
         "alpha129To255": 0
@@ -194,37 +321,9 @@
     "waving-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 11978,
-      "greenDominantPixels": 2,
-      "lowAlphaBrightPixels": 206,
-      "transparentRgbPixels": 0,
-      "greenAlphaBins": {
-        "alpha9To32": 2,
-        "alpha33To64": 0,
-        "alpha65To128": 0,
-        "alpha129To255": 0
-      }
-    },
-    "jumping-224.png": {
-      "width": 224,
-      "height": 244,
-      "occupiedPixels": 13115,
-      "greenDominantPixels": 2,
-      "lowAlphaBrightPixels": 186,
-      "transparentRgbPixels": 0,
-      "greenAlphaBins": {
-        "alpha9To32": 2,
-        "alpha33To64": 0,
-        "alpha65To128": 0,
-        "alpha129To255": 0
-      }
-    },
-    "failed-224.png": {
-      "width": 224,
-      "height": 244,
-      "occupiedPixels": 10799,
+      "occupiedPixels": 11180,
       "greenDominantPixels": 3,
-      "lowAlphaBrightPixels": 249,
+      "lowAlphaBrightPixels": 341,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 3,
@@ -233,12 +332,12 @@
         "alpha129To255": 0
       }
     },
-    "waiting-224.png": {
+    "jumping-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 9174,
+      "occupiedPixels": 12341,
       "greenDominantPixels": 1,
-      "lowAlphaBrightPixels": 114,
+      "lowAlphaBrightPixels": 278,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 1,
@@ -247,12 +346,40 @@
         "alpha129To255": 0
       }
     },
+    "failed-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 10040,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 386,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 1,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waiting-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 8658,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 219,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
     "running-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 12506,
+      "occupiedPixels": 11711,
       "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 189,
+      "lowAlphaBrightPixels": 338,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
@@ -264,14 +391,14 @@
     "review-224.png": {
       "width": 224,
       "height": 244,
-      "occupiedPixels": 19382,
-      "greenDominantPixels": 0,
-      "lowAlphaBrightPixels": 5721,
+      "occupiedPixels": 18563,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 6573,
       "transparentRgbPixels": 0,
       "greenAlphaBins": {
         "alpha9To32": 0,
         "alpha33To64": 0,
-        "alpha65To128": 0,
+        "alpha65To128": 1,
         "alpha129To255": 0
       }
     }

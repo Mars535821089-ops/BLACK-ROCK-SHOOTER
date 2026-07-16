@@ -1,58 +1,117 @@
 # BLACK★ROCK SHOOTER Pet verification — 2026-07-17
 
-## Automated acceptance
+## Accepted production outcome
 
-- Typecheck: pass (`npm run typecheck`)
-- Unit tests: pass (37/37 across 9 files)
-- Frame validation: pass (73/73; 0 errors)
-- Pet build: pass
-- Browser state preview: pass (5/5 Playwright tests; 224 px is a pre-client-patch quality baseline, not final 448 px evidence)
-- All-state mapping: pass (every configured sprite row, final frame, and frame wrap)
-- Native size preview: pass at 80, 113, and 224 px for all 9 task states
-- Weapon visibility mapping: pass for all 9 task states
-- Exact accessible name: pass (`BLACK★ROCK SHOOTER` including `★`)
-- Reproducible visual evidence: pass (`npm run capture:evidence`)
-- Supersampled quality evidence: pass (`npm run capture:quality`)
-- Native occupied-edge safety: pass (minimum 4 transparent pixels; 0 edge-touching frames)
-- Frame uniqueness: pass (73/73 unique SHA-256 hashes)
-- High-resolution source gate: pass (pose sources must be at least 384 × 416 before enlargement)
-- Screenshot pixel QA: 18 transparent Playwright captures; 14 green candidates, all alpha 9–32; 0 candidates at alpha ≥65
-- Installed path: `/Users/mars/.codex/pets/blueflame`
-- Installed contents: exactly `pet.json` and `spritesheet.webp`
-- Installed artifact hashes match `dist/blueflame`: pass
-- Other custom Pets unchanged: pass (`boba` hashes identical before and after install)
-- Repository whitespace check: pass (`git diff --check`)
+The accepted delivery is the official Codex custom Pet contract:
 
-## Installed artifact hashes
+- exact display name: `BLACK★ROCK SHOOTER`;
+- sprite v2: 1536 × 2288, 8 × 11 cells, 192 × 208 per cell;
+- production preview slider: 80–224px;
+- production default: 113px;
+- production rendering: `image-rendering: pixelated`;
+- evidence sizes: 80, 113, and 224px for all nine task states.
+
+No production preview or acceptance claim implies that 448px is live.
+
+## Fresh automated verification
+
+The following commands were run fresh, in this order, against the current
+worktree state:
+
+```sh
+npm run typecheck
+npm test
+npm run test:e2e
+npm run validate:pet
+npm run build:pet
+npm run capture:evidence
+git diff --check
+```
+
+Results:
+
+- TypeScript: pass, exit 0.
+- Unit suite: 11 test files, 62 tests passed, 0 failed.
+- Playwright suite: 1 file, 5 tests passed, 0 failed.
+- Frame validation: 73 frames valid, 0 errors.
+- Pet build: pass, exit 0.
+- Evidence capture: 2 targeted Playwright tests passed; 27 transparent
+  screenshots produced (9 states × 80/113/224); 10 green candidates, 0 opaque
+  green pixels, and 12,202 low-alpha bright diagnostic candidates.
+- Repository whitespace check: pass, exit 0.
+
+Focused patcher/pixel QA was also run separately:
+
+```sh
+npm test -- tests/pixel-qa.test.ts tests/native-pet-patch.test.ts tests/native-pet-bundle.test.ts
+```
+
+Result: 3 files, 27 tests passed. This includes the new running-app apply
+regression: with an otherwise live-safe staged bundle, `apply` refuses before
+inspection/mutation, records zero backend mutations, leaves live and stage
+bytes unchanged, and creates no backup. The restore running-app guard remains.
+
+The preview evidence timing test uses a paused Playwright clock and `runFor`, so
+the configured final frame and wrap are observed deterministically instead of
+depending on real-time interval races.
+
+## Package and isolation audit
+
+The installed custom Pet was hash-audited only; it was not reinstalled or
+mutated during final review. Distribution and installed hashes match:
 
 ```text
 a50292d926058bd756d44c294ee264a131110cfe3b2c33e52631a976cfeafd51  pet.json
 2854b5f96e6c4a0e8b7405c78f4e7f5f41e05949a4a1f73fd56b6318635ea63e  spritesheet.webp
 ```
 
-The installed manifest reports the formal display name `BLACK★ROCK SHOOTER`, sprite version 2, and `spritesheet.webp`.
+The only sibling custom Pet is `boba`; its two hashes still match the recorded
+pre-install baseline:
 
-## Visual evidence
+```text
+a5f00ef46e5dc981430286cc11bad3b54fca73551f66ac47faa71d3ecc47f75c  boba/pet.json
+b2a723fc55ac6af867765dedc26b3841fbf178d7e1025d6011e8d96ac44f19c9  boba/spritesheet.webp
+```
 
-Run `npm run capture:evidence` to regenerate:
+## Live application trust audit
 
-- `work/frame-review/contact-sheet.png`, containing all 73 source frames in their native grid positions.
-- `work/preview-evidence/<state>-<size>.png`, covering all 9 states at 80, 113, and 224 px.
-- `work/preview-evidence/preview-workbench.png`, the deterministic preview workbench capture.
+`/Applications/ChatGPT.app` was read-only audited and remains the exact official
+bundle:
 
-Run `npm run capture:quality` to regenerate the complete 73-frame native/224/80 galleries and `work/task-10/quality-metrics.json`. The production pipeline starts from approved 900–1750 px sources, renders each cell at 768 × 832, then downsamples once with Lanczos3. Relative to the archived prior spritesheet, average occupied bounding-box area is +4.15% native, +3.90% at 224 px, and +4.45% at 80 px; edge strength is +17.71%, +16.06%, and +4.60%, respectively.
+- version `26.707.72221`;
+- `app.asar` SHA-256
+  `b5da51e5df6e996076e4cb19045cec46dd4c08cf61c19cdbc5cb426b8413b73c`;
+- ASAR header and recorded header SHA-256 both
+  `9d7676e404b1b984f571edc89db3786bc2478608d343762b5e7d6d1616780f78`;
+- target integrity valid;
+- classification `original-trusted`;
+- Developer ID `OpenAI OpCo, LLC (2DC432GLL2)` and team `2DC432GLL2`;
+- `codesign --verify --deep --strict`: pass;
+- designated requirement: satisfied;
+- Gatekeeper: accepted, source `Notarized Developer ID`.
 
-Automated checks cover the running, waiting, review, and failed mappings, every other native state, weapon rules, animation cadence and wrap, reduced motion, native size range, full-frame aspect ratio, alpha geometry, and clean transparent frame corners.
+The live app was not modified, quit, or restarted.
 
-## Native Codex self-UI limitation
+## 448px forensic experiment
 
-Scope note: an independent macOS overlay app is deferred/paused and is not part of this delivery. The checks below refer only to Codex's native movable Pet overlay.
+The 448px patcher is retained only as a clearly labeled, version-pinned
+forensic experiment. Its content-valid staged app requires ad-hoc signing and
+cannot preserve OpenAI's Developer ID, designated requirement, notarization, or
+Gatekeeper acceptance. `live-safe` therefore blocks it and it was **not
+applied**. It is not production preview evidence.
 
-The package is installed and `codex://settings/pets` was opened successfully. Codex cannot use Computer Use to control its own app, and the install/spawn API has no Pet selector. Therefore the following native UI observations are deliberately **not marked as passed**:
+An independent macOS overlay is deferred and is not part of this delivery.
 
-- Refreshing the Pet list, selecting `BLACK★ROCK SHOOTER`, and clicking **Wake Pet**.
-- Watching real tasks transition through running, waiting, review, and failed in the floating overlay.
-- Inspecting the native overlay at 80, the pre-client-patch default, and 224 px. Final 448 px display-size acceptance belongs to Task 11 and is not claimed by this record.
-- Restarting Codex and confirming the selected size persists.
+## Honest manual acceptance boundary
 
-One manual acceptance pass in **Settings → Pets** is still required for those observations. No opaque Codex database or application bundle was modified to bypass this limitation.
+Automated verification cannot operate Codex's own native Pet selector through
+the available install/spawn API. These observations remain unverified until the
+user clicks them in the current app:
+
+- refresh/select `BLACK★ROCK SHOOTER` in **Settings → Pets**;
+- click **Wake Pet** and confirm the floating native Pet appears;
+- observe live running, waiting, review, and failed transitions;
+- inspect native rendering at 80, default 113, and 224px;
+- restart Codex and confirm the chosen size persists.
+
+No native selector, Wake, live transition, or persistence pass is claimed here.
