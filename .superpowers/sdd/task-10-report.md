@@ -23,13 +23,21 @@ The pose pipeline rejects any source below 384 × 416 before rotation, resize, o
 
 ## Before evidence
 
-Captured before replacement:
+The only source-of-truth native baseline is the checked-in archived lossless sheet. Derived before images are either checked in or reproducibly extracted from it:
 
 - Old sheet: `work/task-10/before/spritesheet.webp`
-- Native contact sheet: `work/task-10/before/contact-sheet-native.png`
-- Complete 73-frame galleries: `work/task-10/before/all-frames-{192|224|80}.png`
+- Derived native contact sheet: `work/task-10/before/contact-sheet-native.png`
+- Derived complete 73-frame galleries: `work/task-10/before/all-frames-{192|224|80}.png`
 - Preview: `work/task-10/before/preview-workbench.png`
 - Old sheet SHA-256: `e70204fc4a3cc43e8b5bb860cf2cfc3475e4457a61e6124e862565fe5779ced7`
+
+On a clean checkout, regenerate every derived before contact/gallery path above with:
+
+```text
+npm run capture:baseline
+```
+
+This command extracts all 73 configured state/look cells directly from the tracked `work/task-10/before/spritesheet.webp`, composites the native contact sheet, and emits the 192/224/80 galleries. It does not depend on ignored `before/frames` files.
 
 After evidence:
 
@@ -187,6 +195,32 @@ The 7,709 bright candidates are diagnostic only, not classified as white fringe,
 - `work/task-10/after/all-frames-{192|224|80}.png`
 - `work/task-10/quality-metrics.json`
 
+`npm run capture:baseline` regenerates from the tracked archived WebP:
+
+- `work/task-10/before/contact-sheet-native.png`
+- `work/task-10/before/all-frames-{192|224|80}.png`
+
 The fresh complete verification transcript is `work/task-10/full-verification.log`.
 
 All 224 px paths above are labeled pre-client-patch quality baselines only. They must not be used as the final 448 px preview evidence.
+
+### Final evidence-packaging correction
+
+The report no longer relies on an ignored `work/task-10/before/frames` tree. The old native baseline is the tracked archived WebP, and `npm run capture:baseline` is the documented clean-checkout extractor for the two previously untracked native derivatives (`contact-sheet-native.png` and `all-frames-192.png`) as well as the checked-in 224/80 galleries.
+
+Narrow clean-checkout-style reproduction check deleted the two ignored native derivatives, ran `npm run capture:baseline`, and verified:
+
+```text
+contact-sheet-native.png  1536 × 2288
+all-frames-192.png         1536 × 2080
+all-frames-224.png         1792 × 2430
+all-frames-80.png          640 × 870
+second extraction digest matched first: bcfc45e5560f82fe4e8c2b47713fde802c677e1760a10ddfe1cec558bfa5e7dc
+git diff --check: pass
+```
+
+Packaging inventory after this correction:
+
+- tracked source/baselines: archived WebP, before 224/80 galleries, before preview;
+- reproducible before derivatives: native contact and 192 gallery via `capture:baseline`;
+- tracked after evidence: native contact, 192/224/80 galleries, preview, transparent pixel-QA screenshots/JSON, quality metrics, and full verification log.
