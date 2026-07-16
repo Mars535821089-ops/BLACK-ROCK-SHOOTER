@@ -2,6 +2,10 @@ import sharp from "sharp";
 
 export const SUPERSAMPLE_FACTOR = 4;
 export const FINAL_CELL = { width: 192, height: 208 } as const;
+export const MINIMUM_SOURCE = {
+  width: FINAL_CELL.width * 2,
+  height: FINAL_CELL.height * 2,
+} as const;
 export const INTERMEDIATE_CELL = {
   width: FINAL_CELL.width * SUPERSAMPLE_FACTOR,
   height: FINAL_CELL.height * SUPERSAMPLE_FACTOR,
@@ -18,6 +22,20 @@ export type AlphaBounds = {
 };
 
 const OCCUPIED_ALPHA = 8;
+
+export async function assertHighResolutionSource(
+  input: Buffer | string,
+): Promise<void> {
+  const metadata = await sharp(input).metadata();
+  if (
+    (metadata.width ?? 0) < MINIMUM_SOURCE.width ||
+    (metadata.height ?? 0) < MINIMUM_SOURCE.height
+  ) {
+    throw new Error(
+      `pose source must be at least ${MINIMUM_SOURCE.width}x${MINIMUM_SOURCE.height}; received ${metadata.width ?? "unknown"}x${metadata.height ?? "unknown"}`,
+    );
+  }
+}
 
 export async function alphaBounds(input: Buffer | string): Promise<AlphaBounds> {
   const { data, info } = await sharp(input)

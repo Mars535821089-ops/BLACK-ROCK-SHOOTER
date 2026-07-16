@@ -25,7 +25,7 @@ for (const width of [192, 224, 80]) {
   for (let index = 0; index < paths.length; index += 1) {
     const input = width === 192
       ? paths[index]
-      : await sharp(paths[index]).resize(width, height, { kernel: sharp.kernel.cubic }).png().toBuffer();
+      : await sharp(paths[index]).resize(width, height, { fit: "fill", kernel: sharp.kernel.cubic }).png().toBuffer();
     overlays.push({
       input,
       left: (index % columns) * width,

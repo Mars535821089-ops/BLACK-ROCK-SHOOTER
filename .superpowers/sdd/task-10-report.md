@@ -19,7 +19,7 @@ The independent macOS overlay idea is explicitly deferred/paused. This delivery 
 - Final assembly: exact lossless-alpha WebP, 1536 × 2288, 8 × 11 cells, 192 × 208 each.
 - Reproducible commands: `npm run render:frames`, `npm run capture:evidence`, and `npm run capture:quality`.
 
-The supersample finalizer rejects any source that is not exactly 768 × 832. The regression test confirms a native 192 × 208 input is rejected, preventing the old frames from being used as an enlargement source.
+The pose pipeline rejects any source below 384 × 416 before rotation, resize, or enlargement; the supersample finalizer separately rejects any intermediate that is not exactly 768 × 832. Regression tests exercise direct 192 × 208 rejection at both boundaries.
 
 ## Before evidence
 
@@ -38,6 +38,8 @@ After evidence:
 - Preview: `work/task-10/after/preview-workbench.png`
 - Raw metrics: `work/task-10/quality-metrics.json`
 
+`preview-workbench.png` and every Task 10 `*-224.png` capture are strictly pre-client-patch quality baselines for comparing the supersampled sprite. They are not final 448 px evidence and do not establish final display-size acceptance. Task 11 owns the 80–448 preview, 448 default, tighter stage layout, and corresponding final-size evidence.
+
 ## Objective before/after measurements
 
 All averages cover the same 73 frames. Display-scale edge/detail values use smooth cubic resampling to approximate browser CSS scaling; the production 4× reduction itself remains Lanczos3.
@@ -48,7 +50,7 @@ All averages cover the same 73 frames. Display-scale edge/detail values use smoo
 | 224 | 123.32 × 210.49 | 125.88 × 214.04 | +3.90% | +0.74% | +16.06% | +22.92% |
 | 80 | 44.64 × 75.89 | 45.52 × 77.67 | +4.45% | +2.69% | +4.60% | +4.52% |
 
-Native minimum occupied-edge margin improved from 1 pixel to 4 pixels. The new native frames contain 0 green-dominant residual pixels, 0 hidden RGB pixels under alpha 0, and 0 edge-touching frames. The real Playwright captures for all nine states contain 0 green-dominant pixels and 0 low-alpha white pixels at both 224 and 80 px.
+Native minimum occupied-edge margin improved from 1 pixel to 4 pixels. The new native frames contain 0 green-dominant candidates, 0 hidden RGB pixels under alpha 0, and 0 edge-touching frames; unit regressions assert all three native properties. Display-scale interpolation candidates and real browser screenshot results are reported separately in the review follow-up below rather than being labeled zero-fringe by inference.
 
 Native occupied-pixel count is 0.48% lower despite a 4.15% larger bounding box because the new matte removes low-alpha ringing and the restrained detail pass makes edges more decisive. At the actual 224 and 80 display sizes, occupied-pixel count is higher.
 
@@ -68,7 +70,7 @@ One quality-gate failure was found before installation: idle frames 0 and 3 beca
 
 ## Preview and evidence hardening
 
-- Default preview value and evidence are 224 px; slider remains 80–224 px.
+- For this pre-client-patch baseline only, preview default and evidence are 224 px and the slider remains 80–224 px. This is not the final 448 px acceptance surface.
 - Smooth rendering replaces the prior `pixelated` preview enlargement.
 - Visible title and all dynamic/static ARIA labels use exact `BLACK★ROCK SHOOTER` spelling.
 - `capture:evidence` now executes both the all-state configured-row/final-frame/wrap test and the screenshot capture test.
@@ -80,7 +82,7 @@ Fresh final runs after the duplicate-frame fix:
 
 ```text
 npm run typecheck       exit 0
-npm test                8 files passed; 32 tests passed
+npm test                9 files passed; 37 tests passed
 npm run validate:pet    73 frames valid; 0 errors
 npm run build:pet       exit 0
 npm run test:e2e        5 tests passed
@@ -131,3 +133,60 @@ Only `blueflame` and `boba` remain under `~/.codex/pets`; no staging or backup d
 ## Concerns
 
 No asset, build, test, or installation blocker remains. Native self-UI selection and live task-state observation still require one manual pass in Codex Settings because Codex cannot control its own UI and the available spawn API exposes no Pet selector. The independent macOS overlay app remains deferred/paused by scope.
+Final 448 px preview and native display-size acceptance are intentionally not claimed here; they belong to Task 11.
+
+## Important review follow-up
+
+### Pixel-QA method and actual counts
+
+The original report's zero-pixel wording for scaled evidence was too broad. It has been removed and replaced with two explicit measurements using the same candidate threshold: occupied alpha `>= 9`, and green candidate `g > r + 25` plus `g > b + 20`.
+
+1. The deterministic 73-frame quality gallery uses Sharp cubic scaling over the entire transparent frame. It reports candidate pixels, not a fringe verdict:
+
+```text
+native 192: 0
+224: 419 total = alpha 9–32: 372; 33–64: 43; 65–128: 4; 129–255: 0
+80: 59 total = alpha 9–32: 59; all higher bins: 0
+```
+
+These low-alpha samples are cubic interpolation overshoot. The absence of any alpha `>128` candidate is recorded, but the 419/59 totals are retained in `work/task-10/quality-metrics.json`; they are not rewritten as zero.
+
+2. The real browser path captures 18 transparent-background Playwright element screenshots: every native state at 80 and 224 px. The exact scan region is the complete transparent element image; only alpha `>=9` is occupied. Results in `work/task-10/after/preview-pixel-qa.json` are:
+
+```text
+occupied pixels: 116724
+green candidates: 14
+  alpha 9–32: 14
+  alpha 33–255: 0
+high-confidence green candidates (alpha >=65): 0
+low-alpha bright diagnostic candidates: 7709
+```
+
+The 7,709 bright candidates are diagnostic only, not classified as white fringe, because the character intentionally contains white hair highlights, pale skin, a white star emblem, and bright clothing/sword highlights. Contact-sheet visual review remains the appropriate white-halo check. Automated tests assert the threshold implementation, the native zero-candidate/zero-hidden-RGB matte, the real screenshot absence of alpha `>=65` green candidates, and the 4-pixel native occupied margin.
+
+### Source-resolution and occupied-margin gates
+
+- `assertHighResolutionSource` rejects key-pose inputs below 384 × 416 before any enlargement; a real 192 × 208 buffer is the RED/GREEN regression fixture.
+- `finalizeSupersampledFrame` still requires the exact 768 × 832 intermediate.
+- The complete asset regression calculates alpha bounds for all 73 PNGs and requires every side of every frame to retain at least 4 transparent pixels.
+
+### Evidence command/output consistency
+
+`npm run capture:evidence` now regenerates:
+
+- `work/frame-review/contact-sheet.png`
+- `work/preview-evidence/<state>-<80|113|224>.png`
+- `work/preview-evidence/preview-workbench.png`
+- `work/task-10/after/contact-sheet-native.png`
+- `work/task-10/after/preview-workbench.png`
+- `work/task-10/after/pixel-qa/<state>-<80|224>.png`
+- `work/task-10/after/preview-pixel-qa.json`
+
+`npm run capture:quality` regenerates:
+
+- `work/task-10/after/all-frames-{192|224|80}.png`
+- `work/task-10/quality-metrics.json`
+
+The fresh complete verification transcript is `work/task-10/full-verification.log`.
+
+All 224 px paths above are labeled pre-client-patch quality baselines only. They must not be used as the final 448 px preview evidence.

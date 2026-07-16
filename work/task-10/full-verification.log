@@ -1,3 +1,84 @@
+$ npm run typecheck
+
+> typecheck
+> tsc --noEmit
+
+$ npm test
+
+> test
+> vitest run --exclude tests/preview.spec.ts
+
+
+ RUN  v3.2.7 /Users/mars/Documents/Codex/2026-07-17/codex-pet/.worktrees/blueflame-pet
+
+ ✓ tests/manifest.test.ts (1 test) 1ms
+ ✓ tests/pet-spec.test.ts (3 tests) 2ms
+ ✓ tests/supersample-frame.test.ts (3 tests) 30ms
+ ✓ tests/install-pet.test.ts (4 tests) 32ms
+ ✓ tests/pixel-qa.test.ts (2 tests) 17ms
+ ✓ tests/validate-frame.test.ts (3 tests) 16ms
+ ✓ tests/frame-quality.test.ts (3 tests) 95ms
+ ✓ tests/assemble-spritesheet.test.ts (7 tests) 100ms
+ ✓ tests/cli.test.ts (11 tests) 203ms
+
+ Test Files  9 passed (9)
+      Tests  37 passed (37)
+   Start at  05:17:26
+   Duration  586ms (transform 203ms, setup 0ms, collect 502ms, tests 494ms, environment 3ms, prepare 724ms)
+
+$ npm run validate:pet
+
+> validate:pet
+> tsx src/cli.ts validate
+
+73 frames valid; 0 errors
+$ npm run build:pet
+
+> build:pet
+> tsx src/cli.ts build
+
+$ npm run test:e2e
+
+> test:e2e
+> playwright test
+
+[WebServer] (node:20414) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 1 worker
+
+(node:20416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/preview.spec.ts:7:1 › switches every native state and reproduces the native size slider (194ms)
+  ✓  2 tests/preview.spec.ts:49:1 › maps every state row and wraps after its configured final frame (13.8s)
+  ✓  3 tests/preview.spec.ts:83:1 › advances frames on the native 160 millisecond cadence (90ms)
+  ✓  4 tests/preview.spec.ts:95:1 › holds the first frame when reduced motion is requested (1.4s)
+  ✓  5 tests/preview.spec.ts:105:1 › captures every state at the native review sizes (3.1s)
+
+  5 passed (19.4s)
+$ npm run capture:evidence
+
+> capture:evidence
+> tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep "maps every state row|captures every state at the native review sizes" && tsx scripts/analyze-preview-pixels.mjs
+
+[WebServer] (node:20752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:20753) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/preview.spec.ts:49:1 › maps every state row and wraps after its configured final frame (13.8s)
+  ✓  2 tests/preview.spec.ts:105:1 › captures every state at the native review sizes (4.3s)
+
+  2 passed (19.2s)
+preview pixel QA: 18 screenshots; green candidates=14; high-confidence green=0; low-alpha bright candidates=7709
+$ npm run capture:quality
+
+> capture:quality
+> tsx scripts/create-quality-evidence.mjs && node scripts/compare-frame-quality.mjs
+
+quality evidence: 73 frames at native, 224px, and 80px
 {
   "source": {
     "beforeRoot": "work/task-10/before/spritesheet.webp",
@@ -147,3 +228,6 @@
     }
   }
 }
+$ git diff --check
+$ git diff --check (after report and Task 11 boundary wording)
+$ git diff --check (final staged review-fix set)

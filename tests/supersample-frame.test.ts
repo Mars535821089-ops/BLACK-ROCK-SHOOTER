@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
   FINAL_CELL,
   INTERMEDIATE_CELL,
+  MINIMUM_SOURCE,
   SUPERSAMPLE_FACTOR,
   alphaBounds,
+  assertHighResolutionSource,
   finalizeSupersampledFrame,
 } from "../src/supersample-frame.js";
 
@@ -38,7 +40,24 @@ describe("supersampled frame finalization", () => {
     expect(await alphaBounds(output)).toMatchObject({ left: 4, top: 4, right: 4, bottom: 4 });
   });
 
-  it("rejects a native-size input so production cannot enlarge old frames", async () => {
+  it("rejects a native-size key pose before production can enlarge it", async () => {
+    const native = await sharp({
+      create: {
+        ...FINAL_CELL,
+        channels: 4,
+        background: { r: 10, g: 20, b: 30, alpha: 1 },
+      },
+    })
+      .png()
+      .toBuffer();
+
+    await expect(assertHighResolutionSource(native)).rejects.toThrow(
+      "pose source must be at least 384x416",
+    );
+    expect(MINIMUM_SOURCE).toEqual({ width: 384, height: 416 });
+  });
+
+  it("rejects a native-size finalizer input instead of treating it as 4x", async () => {
     const native = await sharp({
       create: {
         ...FINAL_CELL,

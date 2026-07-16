@@ -21,7 +21,7 @@ it("checks in one reproducible command for contact-sheet and preview evidence", 
   };
 
   expect(packageJson.scripts?.["capture:evidence"]).toBe(
-    "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"maps every state row|captures every state at the native review sizes\"",
+    "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"maps every state row|captures every state at the native review sizes\" && tsx scripts/analyze-preview-pixels.mjs",
   );
 });
 

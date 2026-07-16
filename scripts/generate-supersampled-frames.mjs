@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   INTERMEDIATE_CELL,
   SUPERSAMPLE_FACTOR,
+  assertHighResolutionSource,
   finalizeSupersampledFrame,
 } from "../src/supersample-frame.ts";
 
@@ -104,6 +105,7 @@ async function despillSource(input) {
 }
 
 async function pose(input, { maxWidth, maxHeight, rotate = 0, opacity = 1 } = {}) {
+  await assertHighResolutionSource(input);
   let pipeline = sharp(await despillSource(input)).trim({ background: transparent });
   if (rotate) {
     pipeline = pipeline.rotate(rotate, { background: transparent }).trim({ background: transparent });

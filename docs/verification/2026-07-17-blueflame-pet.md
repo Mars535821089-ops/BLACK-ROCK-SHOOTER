@@ -3,10 +3,10 @@
 ## Automated acceptance
 
 - Typecheck: pass (`npm run typecheck`)
-- Unit tests: pass (32/32 across 8 files)
+- Unit tests: pass (37/37 across 9 files)
 - Frame validation: pass (73/73; 0 errors)
 - Pet build: pass
-- Browser state preview: pass (5/5 Playwright tests; default 224 px)
+- Browser state preview: pass (5/5 Playwright tests; 224 px is a pre-client-patch quality baseline, not final 448 px evidence)
 - All-state mapping: pass (every configured sprite row, final frame, and frame wrap)
 - Native size preview: pass at 80, 113, and 224 px for all 9 task states
 - Weapon visibility mapping: pass for all 9 task states
@@ -15,6 +15,8 @@
 - Supersampled quality evidence: pass (`npm run capture:quality`)
 - Native occupied-edge safety: pass (minimum 4 transparent pixels; 0 edge-touching frames)
 - Frame uniqueness: pass (73/73 unique SHA-256 hashes)
+- High-resolution source gate: pass (pose sources must be at least 384 × 416 before enlargement)
+- Screenshot pixel QA: 18 transparent Playwright captures; 14 green candidates, all alpha 9–32; 0 candidates at alpha ≥65
 - Installed path: `/Users/mars/.codex/pets/blueflame`
 - Installed contents: exactly `pet.json` and `spritesheet.webp`
 - Installed artifact hashes match `dist/blueflame`: pass
@@ -50,7 +52,7 @@ The package is installed and `codex://settings/pets` was opened successfully. Co
 
 - Refreshing the Pet list, selecting `BLACK★ROCK SHOOTER`, and clicking **Wake Pet**.
 - Watching real tasks transition through running, waiting, review, and failed in the floating overlay.
-- Inspecting the native overlay at 80, default, and 224 px.
+- Inspecting the native overlay at 80, the pre-client-patch default, and 224 px. Final 448 px display-size acceptance belongs to Task 11 and is not claimed by this record.
 - Restarting Codex and confirming the selected size persists.
 
 One manual acceptance pass in **Settings → Pets** is still required for those observations. No opaque Codex database or application bundle was modified to bypass this limitation.

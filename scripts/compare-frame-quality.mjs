@@ -62,6 +62,7 @@ async function analyze(path, targetWidth) {
   let occupiedPixels = 0;
   let antialiasedPixels = 0;
   let greenDominantPixels = 0;
+  const greenAlphaBins = { alpha9To32: 0, alpha33To64: 0, alpha65To128: 0, alpha129To255: 0 };
   let transparentRgbPixels = 0;
 
   for (let y = 0; y < info.height; y += 1) {
@@ -81,7 +82,13 @@ async function analyze(path, targetWidth) {
       if (a <= 8) continue;
       occupiedPixels += 1;
       if (a < 247) antialiasedPixels += 1;
-      if (g > r + 25 && g > b + 20) greenDominantPixels += 1;
+      if (g > r + 25 && g > b + 20) {
+        greenDominantPixels += 1;
+        if (a <= 32) greenAlphaBins.alpha9To32 += 1;
+        else if (a <= 64) greenAlphaBins.alpha33To64 += 1;
+        else if (a <= 128) greenAlphaBins.alpha65To128 += 1;
+        else greenAlphaBins.alpha129To255 += 1;
+      }
       minX = Math.min(minX, x);
       minY = Math.min(minY, y);
       maxX = Math.max(maxX, x);
@@ -128,6 +135,7 @@ async function analyze(path, targetWidth) {
     edgeStrength: edgeTotal / edgeSamples,
     interiorDetail: detailTotal / detailSamples,
     greenDominantPixels,
+    greenAlphaBins,
     transparentRgbPixels,
   };
 }
@@ -149,6 +157,12 @@ async function analyzeSet(root) {
       edgeStrength: mean(measurements.map((entry) => entry.edgeStrength)),
       interiorDetail: mean(measurements.map((entry) => entry.interiorDetail)),
       greenDominantPixels: measurements.reduce((sum, entry) => sum + entry.greenDominantPixels, 0),
+      greenAlphaBins: Object.fromEntries(
+        Object.keys(measurements[0].greenAlphaBins).map((key) => [
+          key,
+          measurements.reduce((sum, entry) => sum + entry.greenAlphaBins[key], 0),
+        ]),
+      ),
       transparentRgbPixels: measurements.reduce((sum, entry) => sum + entry.transparentRgbPixels, 0),
     };
   }
@@ -164,7 +178,19 @@ const comparison = Object.fromEntries(sizes.map((size) => [size, {
   edgeStrengthPercent: percent(after[size].edgeStrength, before[size].edgeStrength),
   interiorDetailPercent: percent(after[size].interiorDetail, before[size].interiorDetail),
 }]))
-const report = { source: { beforeRoot, afterRoot }, frameCount: 73, sizes, before, after, comparison };
+const report = {
+  source: { beforeRoot, afterRoot },
+  frameCount: 73,
+  sizes,
+  greenCandidateMethod: {
+    region: "entire transparent frame after cubic evidence resampling; alpha >= 9",
+    threshold: "g > r + 25 and g > b + 20",
+    interpretation: "candidate count only; inspect alpha bins and real Playwright screenshot QA before labeling fringe",
+  },
+  before,
+  after,
+  comparison,
+};
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
 console.log(JSON.stringify(report, null, 2));

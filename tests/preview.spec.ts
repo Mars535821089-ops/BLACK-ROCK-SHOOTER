@@ -104,6 +104,7 @@ test("holds the first frame when reduced motion is requested", async ({ page }) 
 
 test("captures every state at the native review sizes", async ({ page }) => {
   await mkdir("work/preview-evidence", { recursive: true });
+  await mkdir("work/task-10/after/pixel-qa", { recursive: true });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/preview/");
 
@@ -129,4 +130,21 @@ test("captures every state at the native review sizes", async ({ page }) => {
     animations: "disabled",
     path: "work/preview-evidence/preview-workbench.png",
   });
+
+  await page.addStyleTag({ content: `
+    html, body, .review-shell, .motion-stage, .pet-frame { background: transparent !important; }
+    .motion-stage::before, .motion-stage::after, .frame-line { display: none !important; }
+    #pet { filter: none !important; }
+  ` });
+  for (const name of STATE_NAMES) {
+    await state.selectOption(name);
+    for (const value of [80, 224] as const) {
+      await size.fill(String(value));
+      await pet.screenshot({
+        animations: "disabled",
+        omitBackground: true,
+        path: `work/task-10/after/pixel-qa/${name}-${value}.png`,
+      });
+    }
+  }
 });

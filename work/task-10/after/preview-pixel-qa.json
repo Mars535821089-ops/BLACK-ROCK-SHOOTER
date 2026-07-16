@@ -1,0 +1,279 @@
+{
+  "method": {
+    "region": "transparent-background Playwright pet-element screenshot; only sprite pixels with alpha >= 9 are occupied",
+    "thresholds": {
+      "occupiedAlphaMinimum": 9,
+      "greenRedDelta": 25,
+      "greenBlueDelta": 20,
+      "lowAlphaMaximum": 229,
+      "whiteChannelMinimum": 241
+    },
+    "greenCandidate": "g > r + 25 and g > b + 20",
+    "lowAlphaBrightCandidate": "alpha 9..229 and r,g,b >= 241; diagnostic count only because white hair, skin, emblem, and highlights are intentional"
+  },
+  "screenshotCount": 18,
+  "sizes": [
+    80,
+    224
+  ],
+  "totals": {
+    "occupiedPixels": 116724,
+    "greenDominantPixels": 14,
+    "lowAlphaBrightPixels": 7709,
+    "highConfidenceGreenPixels": 0
+  },
+  "byFile": {
+    "idle-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1530,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 8,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-right-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1109,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 8,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-left-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1003,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 5,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waving-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1727,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 10,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "jumping-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1844,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 10,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "failed-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1554,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 8,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waiting-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1309,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 3,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 1789,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 3,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "review-80.png": {
+      "width": 80,
+      "height": 88,
+      "occupiedPixels": 2683,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 597,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "idle-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 10694,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 103,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-right-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 7648,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 142,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-left-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 6880,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 147,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waving-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 11978,
+      "greenDominantPixels": 2,
+      "lowAlphaBrightPixels": 206,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 2,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "jumping-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 13115,
+      "greenDominantPixels": 2,
+      "lowAlphaBrightPixels": 186,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 2,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "failed-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 10799,
+      "greenDominantPixels": 3,
+      "lowAlphaBrightPixels": 249,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 3,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "waiting-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 9174,
+      "greenDominantPixels": 1,
+      "lowAlphaBrightPixels": 114,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 1,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "running-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 12506,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 189,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    },
+    "review-224.png": {
+      "width": 224,
+      "height": 244,
+      "occupiedPixels": 19382,
+      "greenDominantPixels": 0,
+      "lowAlphaBrightPixels": 5721,
+      "transparentRgbPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      }
+    }
+  }
+}
