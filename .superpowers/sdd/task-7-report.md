@@ -131,3 +131,23 @@ All commands exited 0. Metadata checks confirmed an exact `webp` 1536x2288 alpha
 - `runCommand` provides narrow dependency and path/runtime seams for deterministic orchestration tests while CLI defaults remain unchanged.
 - Tests assert the exact ordered set of 73 frame paths, build destinations and post-build validation, corrupted manifest/format rejection, isolated `CODEX_HOME` routing, supported-command isolation, and contact-sheet geometry.
 - Look rows are derived from `PET_SPEC.rows - 2`; a variable-geometry test prevents regression to a hardcoded row index.
+
+## Final placement and home-fallback mutation coverage
+
+### Mutation RED evidence
+
+Two temporary production mutations were applied together: all configured state rows after row 0 were shifted upward by one row, and the no-`CODEX_HOME` fallback omitted `.codex`. Running only the new regression tests produced:
+
+```text
+npm test -- tests/cli.test.ts -t 'falls back|renders every'
+Test Files 1 failed (1)
+Tests 2 failed | 8 skipped (10)
+```
+
+The placement test decoded blue at the first expected representative state pixel instead of its unique `[20, 30, 40]` marker. The fallback test reported `<homeDir>/pets` instead of the required `<homeDir>/.codex/pets`. Both mutations were then reverted.
+
+### Restored GREEN coverage
+
+- All nine configured state rows now have a unique RGB marker at a representative nonzero column; the test decodes the finished contact sheet and checks every expected row/column pixel.
+- The existing look direction 0 and 8 decoded-pixel assertions remain, covering both derived look rows.
+- A separate install orchestration test runs with an empty environment and asserts source `dist/blueflame`, slug `blueflame`, pets root `<homeDir>/.codex/pets`, and the resulting full target path.

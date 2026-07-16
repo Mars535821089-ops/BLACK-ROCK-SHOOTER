@@ -227,6 +227,40 @@ it("routes install through CODEX_HOME/pets/blueflame without using homeDir", asy
   );
 });
 
+it("falls back to homeDir/.codex/pets/blueflame when CODEX_HOME is absent", async () => {
+  const homeDir = await temporaryDirectory();
+  const installPet = vi.fn(async (options) => ({
+    target: join(options.petsRoot, options.slug),
+    backupPath: null,
+  }));
+  const log = vi.fn();
+
+  await runCommand("install", {
+    distDir: "/dist/blueflame",
+    env: {},
+    homeDir,
+    log,
+    dependencies: {
+      validateBuild: async () => undefined,
+      installPet,
+    },
+  });
+
+  const expectedTarget = join(
+    homeDir,
+    ".codex",
+    "pets",
+    "blueflame",
+  );
+  expect(installPet).toHaveBeenCalledOnce();
+  expect(installPet.mock.calls[0]?.[0]).toMatchObject({
+    sourceDir: "/dist/blueflame",
+    petsRoot: join(homeDir, ".codex", "pets"),
+    slug: "blueflame",
+  });
+  expect(log).toHaveBeenCalledWith(`Installed to ${expectedTarget}`);
+});
+
 it("runs only contact-sheet orchestration for the contact-sheet command", async () => {
   const create = vi.fn(async () => undefined);
   const validate = vi.fn(async () => 73);
@@ -253,7 +287,7 @@ it("runs only contact-sheet orchestration for the contact-sheet command", async 
   expect(install).not.toHaveBeenCalled();
 });
 
-it("derives look placement from PET_SPEC rows and renders both look rows", async () => {
+it("renders every configured state cell and both derived look rows", async () => {
   expect(
     lookCellFor(8, {
       columns: 8,
@@ -265,42 +299,46 @@ it("derives look placement from PET_SPEC rows and renders both look rows", async
 
   const root = await temporaryDirectory();
   const output = join(root, "review", "contact-sheet.png");
-  const blue = await sharp({
-    create: {
-      width: 1,
-      height: 1,
-      channels: 4,
-      background: { r: 0, g: 0, b: 255, alpha: 1 },
-    },
-  })
-    .png()
-    .toBuffer();
-  const red = await sharp({
-    create: {
-      width: 1,
-      height: 1,
-      channels: 4,
-      background: { r: 255, g: 0, b: 0, alpha: 1 },
-    },
-  })
-    .png()
-    .toBuffer();
-  const green = await sharp({
-    create: {
-      width: 1,
-      height: 1,
-      channels: 4,
-      background: { r: 0, g: 255, b: 0, alpha: 1 },
-    },
-  })
-    .png()
-    .toBuffer();
+  const pixel = (r: number, g: number, b: number) =>
+    sharp({
+      create: {
+        width: 1,
+        height: 1,
+        channels: 4,
+        background: { r, g, b, alpha: 1 },
+      },
+    })
+      .png()
+      .toBuffer();
+  const blue = await pixel(0, 0, 255);
+  const red = await pixel(255, 0, 0);
+  const green = await pixel(0, 255, 0);
+  const stateSamples = await Promise.all(
+    Object.entries(STATES).map(async ([state, spec], index) => {
+      const color = [
+        20 + index * 20,
+        30 + index * 15,
+        40 + index * 10,
+      ] as const;
+      return {
+        state,
+        spec,
+        column: Math.min(index + 1, spec.frames - 1),
+        color,
+        buffer: await pixel(...color),
+      };
+    }),
+  );
 
-  for (const [state, spec] of Object.entries(STATES)) {
+  for (const sample of stateSamples) {
+    const { state, spec, column: representativeColumn, buffer } = sample;
     await mkdir(join(root, state), { recursive: true });
     await Promise.all(
       Array.from({ length: spec.frames }, (_, column) =>
-        writeFile(join(root, state, `${column}.png`), blue),
+        writeFile(
+          join(root, state, `${column}.png`),
+          column === representativeColumn ? buffer : blue,
+        ),
       ),
     );
   }
@@ -321,6 +359,23 @@ it("derives look placement from PET_SPEC rows and renders both look rows", async
     width: PET_SPEC.sheetWidth,
     height: PET_SPEC.sheetHeight,
   });
+
+  expect(stateSamples.every(({ column }) => column > 0)).toBe(true);
+  expect(new Set(stateSamples.map(({ color }) => color.join(","))).size).toBe(
+    Object.keys(STATES).length,
+  );
+  for (const { spec, column, color } of stateSamples) {
+    const rendered = await sharp(output)
+      .extract({
+        left: column * PET_SPEC.cellWidth,
+        top: spec.row * PET_SPEC.cellHeight,
+        width: 1,
+        height: 1,
+      })
+      .raw()
+      .toBuffer();
+    expect([...rendered.subarray(0, 3)]).toEqual([...color]);
+  }
 
   const firstRow = await sharp(output)
     .extract({
