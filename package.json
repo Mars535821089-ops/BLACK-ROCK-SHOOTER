@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run --exclude tests/preview.spec.ts",
+    "test": "vitest run --exclude tests/preview.spec.ts --exclude 'work/**'",
     "typecheck": "tsc --noEmit",
     "render:frames": "tsx scripts/generate-supersampled-frames.mjs",
     "build:pet": "tsx src/cli.ts build",
@@ -12,6 +12,7 @@
     "capture:evidence": "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"maps every state row|captures every state at the native review sizes\" && tsx scripts/analyze-preview-pixels.mjs",
     "capture:quality": "tsx scripts/create-quality-evidence.mjs && node scripts/compare-frame-quality.mjs",
     "capture:baseline": "tsx scripts/create-quality-evidence.mjs work/task-10/before/spritesheet.webp work/task-10/before all-frames",
+    "patch:native-pet": "tsx scripts/native-pet-patcher.ts",
     "preview": "vite --host 127.0.0.1",
     "test:e2e": "playwright test"
   },
@@ -19,6 +20,7 @@
     "sharp": "^0.34.0"
   },
   "devDependencies": {
+    "@electron/asar": "3.4.1",
     "@playwright/test": "^1.54.0",
     "@types/node": "^22.0.0",
     "tsx": "^4.20.0",
