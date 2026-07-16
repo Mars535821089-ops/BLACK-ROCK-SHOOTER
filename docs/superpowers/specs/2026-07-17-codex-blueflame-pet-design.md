@@ -1,4 +1,4 @@
-# Codex Blueflame Pet 设计说明
+# Codex BLACK★ROCK SHOOTER Pet 设计说明
 
 ## 目标
 

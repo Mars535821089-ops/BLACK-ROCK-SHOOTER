@@ -1,4 +1,4 @@
-# Codex Blueflame Pet Implementation Plan
+# Codex BLACK★ROCK SHOOTER Pet Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -364,7 +364,7 @@ Display `assets/master/blueflame-master.png`, `work/master-review/master-224.png
 ```json
 // assets/master/character-lock.json
 {
-  "name": "Blueflame",
+  "name": "BLACK★ROCK SHOOTER",
   "proportion": "seven-head adult anime",
   "renderStyle": "smooth cel-shaded anime",
   "hair": "black high twin-tails with side fringe",
@@ -384,7 +384,7 @@ Display `assets/master/blueflame-master.png`, `work/master-review/master-224.png
 
 ```bash
 git add assets/references assets/master
-git commit -m "art: lock Blueflame character master"
+git commit -m "art: lock BLACK★ROCK SHOOTER character master"
 ```
 
 ---
@@ -421,7 +421,7 @@ mkdir -p assets/frames/{idle,running-right,running-left,waving,jumping,failed,wa
 For every state, use the approved master as the referenced image and preserve character identity exactly. Apply this shared instruction to every generation:
 
 ```text
-Use the attached approved Blueflame master as an immutable character reference. Preserve the same face, seven-head body ratio, hair length, twin-tail anchors, outfit seams, star emblem, belt, gloves, boots, colors, cel-shading, and sword design. Draw the complete body from hair tips to boot soles inside a 192x208 transparent frame with consistent foot baseline and scale. No scenery, text, extra limbs, cropping, outfit changes, face changes, or camera changes.
+Use the attached approved BLACK★ROCK SHOOTER master as an immutable character reference. Preserve the same face, seven-head body ratio, hair length, twin-tail anchors, outfit seams, star emblem, belt, gloves, boots, colors, cel-shading, and sword design. Draw the complete body from hair tips to boot soles inside a 192x208 transparent frame with consistent foot baseline and scale. No scenery, text, extra limbs, cropping, outfit changes, face changes, or camera changes.
 ```
 
 Generate these exact action arcs:
@@ -476,7 +476,7 @@ Record checks in:
 
 ```bash
 git add assets/frames
-git commit -m "art: add Blueflame native state frames"
+git commit -m "art: add BLACK★ROCK SHOOTER native state frames"
 ```
 
 ---
@@ -584,7 +584,7 @@ Expected: test PASS; `file dist/blueflame/spritesheet.webp` reports WebP; Sharp 
 
 ```bash
 git add src/assemble-spritesheet.ts tests/assemble-spritesheet.test.ts dist/blueflame/spritesheet.webp
-git commit -m "feat: assemble Blueflame v2 spritesheet"
+git commit -m "feat: assemble BLACK★ROCK SHOOTER v2 spritesheet"
 ```
 
 ---
@@ -610,7 +610,7 @@ import { createManifest } from "../src/manifest.js";
 
 it("creates the native v2 manifest", () => {
   expect(createManifest()).toEqual({
-    displayName: "Blueflame",
+    displayName: "BLACK★ROCK SHOOTER",
     description: "A cool-headed blue-flame swordswoman who tracks your Codex tasks.",
     spriteVersionNumber: 2,
     spritesheetPath: "spritesheet.webp",
@@ -658,7 +658,7 @@ import { writeFile } from "node:fs/promises";
 
 export function createManifest() {
   return {
-    displayName: "Blueflame",
+    displayName: "BLACK★ROCK SHOOTER",
     description: "A cool-headed blue-flame swordswoman who tracks your Codex tasks.",
     spriteVersionNumber: 2,
     spritesheetPath: "spritesheet.webp",
@@ -724,7 +724,7 @@ Expected: tests PASS; `dist/blueflame/pet.json` matches the approved manifest.
 
 ```bash
 git add src/manifest.ts src/install-pet.ts tests/manifest.test.ts tests/install-pet.test.ts dist/blueflame/pet.json
-git commit -m "feat: install Blueflame Pet atomically"
+git commit -m "feat: install BLACK★ROCK SHOOTER Pet atomically"
 ```
 
 ---
@@ -870,7 +870,7 @@ Expected: test PASS; validation prints `73 frames valid; 0 errors`; build exits 
 
 ```bash
 git add src/cli.ts src/contact-sheet.ts tests/cli.test.ts work/frame-review/contact-sheet.png
-git commit -m "feat: add Blueflame build and review CLI"
+git commit -m "feat: add BLACK★ROCK SHOOTER build and review CLI"
 ```
 
 ---
@@ -976,7 +976,7 @@ Expected: PASS. Then capture screenshots for all nine states at 80, 113, and 224
 
 ```bash
 git add preview tests/preview.spec.ts playwright.config.ts work/preview-evidence
-git commit -m "test: verify Blueflame states and native size range"
+git commit -m "test: verify BLACK★ROCK SHOOTER states and native size range"
 ```
 
 ---
@@ -1014,7 +1014,7 @@ Expected: output begins `Installed to` and ends with `/.codex/pets/blueflame`. T
 
 - [ ] **Step 3: Verify in Codex Settings**
 
-Open `Settings → Pets`, click `Refresh`, select `Blueflame`, and click `Wake Pet`. Verify that the Pet appears in the native selector and floating overlay. This UI verification requires the user because Codex blocks Computer Use from controlling its own app.
+Open `Settings → Pets`, click `Refresh`, select `BLACK★ROCK SHOOTER`, and click `Wake Pet`. Verify that the Pet appears in the native selector and floating overlay. This UI verification requires the user because Codex blocks Computer Use from controlling its own app.
 
 - [ ] **Step 4: Verify real task-state transitions**
 
@@ -1027,7 +1027,7 @@ Move `Pet size` to 80 px, default, and 224 px. Confirm the complete body remains
 - [ ] **Step 6: Record final evidence**
 
 ```md
-# Blueflame Pet verification — 2026-07-17
+# BLACK★ROCK SHOOTER Pet verification — 2026-07-17
 
 - Typecheck: pass
 - Unit tests: pass
@@ -1046,5 +1046,5 @@ Move `Pet size` to 80 px, default, and 224 px. Confirm the complete body remains
 
 ```bash
 git add docs/verification/2026-07-17-blueflame-pet.md assets/frames/frame-review.md
-git commit -m "docs: verify Blueflame Pet end to end"
+git commit -m "docs: verify BLACK★ROCK SHOOTER Pet end to end"
 ```

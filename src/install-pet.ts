@@ -6,6 +6,7 @@ type InstallOptions = {
   petsRoot: string;
   slug: string;
   validate: (directory: string) => Promise<void>;
+  rename?: typeof rename;
 };
 
 export async function installPet(options: InstallOptions) {
@@ -16,6 +17,7 @@ export async function installPet(options: InstallOptions) {
   const target = join(options.petsRoot, options.slug);
   const staging = join(options.petsRoot, `.${options.slug}.staging`);
   const backup = join(options.petsRoot, `${options.slug}.backup-${Date.now()}`);
+  const renamePath = options.rename ?? rename;
 
   await mkdir(options.petsRoot, { recursive: true });
   await rm(staging, { recursive: true, force: true });
@@ -29,16 +31,20 @@ export async function installPet(options: InstallOptions) {
 
   let backupPath: string | null = null;
   try {
-    await rename(target, backup);
+    await renamePath(target, backup);
     backupPath = backup;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
 
   try {
-    await rename(staging, target);
+    await renamePath(staging, target);
   } catch (error) {
-    if (backupPath) await rename(backupPath, target);
+    try {
+      if (backupPath) await renamePath(backupPath, target);
+    } finally {
+      await rm(staging, { recursive: true, force: true });
+    }
     throw error;
   }
 

@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 
 export function createManifest() {
   return {
-    displayName: "Blueflame",
+    displayName: "BLACK★ROCK SHOOTER",
     description: "A cool-headed blue-flame swordswoman who tracks your Codex tasks.",
     spriteVersionNumber: 2,
     spritesheetPath: "spritesheet.webp",
