@@ -15,6 +15,16 @@ import { PET_SPEC, STATES } from "../src/pet-spec.js";
 
 const temporaryPaths: string[] = [];
 
+it("checks in one reproducible command for contact-sheet and preview evidence", async () => {
+  const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
+    scripts?: Record<string, string>;
+  };
+
+  expect(packageJson.scripts?.["capture:evidence"]).toBe(
+    "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"captures every state at the native review sizes\"",
+  );
+});
+
 async function temporaryDirectory(): Promise<string> {
   const path = await mkdtemp(join(tmpdir(), "blueflame-cli-"));
   temporaryPaths.push(path);

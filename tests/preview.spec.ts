@@ -14,6 +14,10 @@ test("switches every native state and reproduces the native size slider", async 
   const size = page.getByLabel("Pet size");
 
   await expect(pet).toHaveAttribute("data-state", "idle");
+  await expect(pet).toHaveAttribute(
+    "aria-label",
+    "BLACK★ROCK SHOOTER idle animation",
+  );
   await expect(state.locator("option")).toHaveCount(STATE_NAMES.length);
   await expect(size).toHaveAttribute("min", "80");
   await expect(size).toHaveAttribute("max", "224");
@@ -24,6 +28,10 @@ test("switches every native state and reproduces the native size slider", async 
   for (const name of STATE_NAMES) {
     await state.selectOption(name);
     await expect(pet).toHaveAttribute("data-state", name);
+    await expect(pet).toHaveAttribute(
+      "aria-label",
+      `BLACK★ROCK SHOOTER ${name.replaceAll("-", " ")} animation`,
+    );
     await expect(pet).toHaveAttribute("data-weapon", String(STATES[name].weapon));
   }
 
@@ -34,6 +42,40 @@ test("switches every native state and reproduces the native size slider", async 
     expect(bounds).not.toBeNull();
     expect(bounds!.height / bounds!.width).toBeCloseTo(208 / 192, 2);
     await expect(page.getByTestId("size-value")).toHaveText(`${value} px`);
+  }
+});
+
+test("maps every state row and wraps after its configured final frame", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.goto("/preview/");
+
+  const pet = page.getByTestId("pet");
+  const state = page.getByLabel("State");
+
+  for (const name of STATE_NAMES) {
+    const spec = STATES[name];
+    const finalX = `${Number((((spec.frames - 1) / 7) * 100).toFixed(4))}%`;
+    const expectedY = `${(spec.row / 10) * 100}%`;
+    await state.selectOption(name);
+
+    await expect(pet).toHaveAttribute("data-frame", "0");
+    expect(await pet.evaluate((element) => element.style.backgroundPosition)).toBe(
+      `0% ${expectedY}`,
+    );
+
+    await page.clock.fastForward((spec.frames - 1) * 160);
+    await expect(pet).toHaveAttribute("data-frame", String(spec.frames - 1));
+    expect(await pet.evaluate((element) => element.style.backgroundPosition)).toBe(
+      `${finalX} ${expectedY}`,
+    );
+
+    await page.clock.fastForward(160);
+    await expect(pet).toHaveAttribute("data-frame", "0");
+    expect(await pet.evaluate((element) => element.style.backgroundPosition)).toBe(
+      `0% ${expectedY}`,
+    );
   }
 });
 

@@ -14,5 +14,7 @@
 - Full native contact sheet: `work/frame-review/contact-sheet.png`
 - Representative sequence at 224 px: `work/frame-review/representative-224.png`
 - Representative sequence at 80 px: `work/frame-review/representative-80.png`
+- Reproduce the contact sheet and all 9 states at 80, 113, and 224 px with `npm run capture:evidence`.
+- Automated preview coverage verifies each state's configured sprite row, final frame, and frame wrap.
 - All state sequences contain unique files and visible pose/translation/rotation/gaze changes.
 - Chroma QA: zero green-dominant residual pixels and all four corner samples transparent in all 73 frames.

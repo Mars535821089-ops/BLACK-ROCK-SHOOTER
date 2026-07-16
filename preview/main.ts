@@ -31,7 +31,7 @@ function play(name: StateName) {
 
   pet.dataset.state = name;
   pet.dataset.weapon = String(spec.weapon);
-  pet.setAttribute("aria-label", `BLACK ROCK SHOOTER ${name.replaceAll("-", " ")} animation`);
+  pet.setAttribute("aria-label", `BLACK★ROCK SHOOTER ${name.replaceAll("-", " ")} animation`);
   stateCount.textContent = `${String(stateIndex + 1).padStart(2, "0")} / ${String(STATE_NAMES.length).padStart(2, "0")}`;
   weaponReadout.textContent = spec.weapon ? "Visible" : "Hidden";
 

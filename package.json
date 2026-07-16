@@ -8,6 +8,7 @@
     "build:pet": "tsx src/cli.ts build",
     "validate:pet": "tsx src/cli.ts validate",
     "install:pet": "tsx src/cli.ts install",
+    "capture:evidence": "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"captures every state at the native review sizes\"",
     "preview": "vite --host 127.0.0.1",
     "test:e2e": "playwright test"
   },
