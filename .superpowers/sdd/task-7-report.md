@@ -76,3 +76,58 @@ exit 0
 - Build artifacts are validated before build success and again before/during installation.
 - No real `~/.codex/pets` installation was performed; installer verification used an isolated temporary `CODEX_HOME`.
 - Contact-sheet placement uses `PET_SPEC` dimensions rather than duplicating cell constants.
+
+## Review-finding TDD follow-up
+
+### RED evidence
+
+After adding strict build-validation, orchestration, path enumeration, install-routing, command-isolation, and contact-sheet geometry tests:
+
+```text
+npm test -- tests/cli.test.ts
+Test Files 1 failed (1)
+Tests 8 failed | 1 passed (9)
+```
+
+The failures specifically showed the missing `runCommand`, `validateBuild`, and `lookCellFor` seams, and that `validateAll` could not yet receive a deterministic frame validator.
+
+### GREEN evidence
+
+Focused tests after implementation:
+
+```text
+npm test -- tests/cli.test.ts
+Test Files 1 passed (1)
+Tests 9 passed (9)
+```
+
+Full automated verification:
+
+```text
+npm run typecheck
+exit 0
+
+npm test
+Test Files 6 passed (6)
+Tests 27 passed (27)
+```
+
+Fresh real-asset smoke verification:
+
+```text
+npm run validate:pet
+73 frames valid; 0 errors
+
+npm run build:pet
+npx tsx src/cli.ts contact-sheet
+CODEX_HOME=<temporary-directory> npm run install:pet
+```
+
+All commands exited 0. Metadata checks confirmed an exact `webp` 1536x2288 alpha spritesheet and an exact `png` 1536x2288 alpha contact sheet. The temporary install created `pets/blueflame` without touching the real home directory.
+
+### Review resolutions
+
+- `validateBuild` now requires deep equality with `createManifest()`, rejecting missing, changed, or extra fields, and requires actual WebP format plus exact dimensions and alpha.
+- `runCommand` provides narrow dependency and path/runtime seams for deterministic orchestration tests while CLI defaults remain unchanged.
+- Tests assert the exact ordered set of 73 frame paths, build destinations and post-build validation, corrupted manifest/format rejection, isolated `CODEX_HOME` routing, supported-command isolation, and contact-sheet geometry.
+- Look rows are derived from `PET_SPEC.rows - 2`; a variable-geometry test prevents regression to a hardcoded row index.

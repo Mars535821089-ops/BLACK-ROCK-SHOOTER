@@ -3,6 +3,25 @@ import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { PET_SPEC, STATES } from "./pet-spec.js";
 
+type SheetGeometry = {
+  columns: number;
+  rows: number;
+  cellWidth: number;
+  cellHeight: number;
+};
+
+export function lookCellFor(
+  direction: number,
+  geometry: SheetGeometry = PET_SPEC,
+): { left: number; top: number } {
+  return {
+    left: (direction % geometry.columns) * geometry.cellWidth,
+    top:
+      (geometry.rows - 2 + Math.floor(direction / geometry.columns)) *
+      geometry.cellHeight,
+  };
+}
+
 export async function createContactSheet(
   frameRoot: string,
   outputPath: string,
@@ -22,10 +41,7 @@ export async function createContactSheet(
   for (let direction = 0; direction < 16; direction += 1) {
     overlays.push({
       input: join(frameRoot, "look", `${direction}.png`),
-      left: (direction % PET_SPEC.columns) * PET_SPEC.cellWidth,
-      top:
-        (9 + Math.floor(direction / PET_SPEC.columns)) *
-        PET_SPEC.cellHeight,
+      ...lookCellFor(direction),
     });
   }
 
