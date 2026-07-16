@@ -441,13 +441,23 @@ Normalize every accepted frame to exactly `192 × 208` transparent PNG and save 
 
 - [ ] **Step 3: Validate all generated frames**
 
-Run: `npm run validate:pet`
+Run:
+
+```bash
+npx tsx -e 'import { assertFrame } from "./src/validate-frame.ts"; import { STATES } from "./src/pet-spec.ts"; import { join } from "node:path"; let count=0; for (const [state,spec] of Object.entries(STATES)) for (let column=0; column<spec.frames; column+=1) { await assertFrame(join("assets/frames",state,`${column}.png`)); count+=1; } for (let direction=0; direction<16; direction+=1) { await assertFrame(join("assets/frames","look",`${direction}.png`)); count+=1; } console.log(`${count} frames valid; 0 errors`)'
+```
 
 Expected: `73 frames valid; 0 errors`.
 
 - [ ] **Step 4: Create a contact sheet and review consistency**
 
-The CLI added in Task 7 must support `tsx src/cli.ts contact-sheet`; run it and inspect `work/frame-review/contact-sheet.png`. Record checks in:
+Run this self-contained compositor before the Task 7 CLI exists, then inspect `work/frame-review/contact-sheet.png`:
+
+```bash
+npx tsx -e 'import sharp from "sharp"; import { mkdir } from "node:fs/promises"; import { STATES } from "./src/pet-spec.ts"; import { join } from "node:path"; const overlays=[]; for (const [state,spec] of Object.entries(STATES)) for (let column=0; column<spec.frames; column+=1) overlays.push({input:join("assets/frames",state,`${column}.png`),left:column*192,top:spec.row*208}); for (let direction=0; direction<16; direction+=1) overlays.push({input:join("assets/frames","look",`${direction}.png`),left:(direction%8)*192,top:(9+Math.floor(direction/8))*208}); await mkdir("work/frame-review",{recursive:true}); await sharp({create:{width:1536,height:2288,channels:4,background:{r:28,g:31,b:38,alpha:1}}}).composite(overlays).png().toFile("work/frame-review/contact-sheet.png")'
+```
+
+Record checks in:
 
 ```md
 # Frame review
