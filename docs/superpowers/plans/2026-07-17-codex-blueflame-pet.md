@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - The character uses a normal seven-head anime proportion and must remain visible from head to toe in every frame.
-- The visual identity stays close to the supplied references: black high twin-tails, side fringe, ice-blue eyes, blue flame above the right eye, cropped black hooded jacket with white sleeve stripe and star mark, black shorts, white belt, black gloves, and knee-high tactical boots.
+- The visual identity stays close to the supplied references: black high twin-tails, side fringe, ice-blue eyes, blue flame above the viewer-right eye (character anatomical left), cropped black hooded jacket with white sleeve stripe and star mark, black shorts, white belt, black gloves, and knee-high tactical boots.
 - Rendering is smooth cel-shaded anime, not chibi and not intentionally coarse pixel art.
 - The black long sword with a silver-blue edge is hidden for `idle`, `waiting`, `review`, and `jumping`; it is visible for `running`, `running-left`, `running-right`, `waving`, and `failed` according to the approved actions.
 - Character face, hair, outfit, body ratio, colors, and weapon design must stay consistent across all frames.
@@ -338,7 +338,7 @@ Expected: three reference files exist and `shasum -a 256 assets/references/*` pr
 Use all three references and this exact art direction:
 
 ```text
-Create one original full-body anime character turnaround hero image on a transparent background. The character must be visible from the top of both twin-tails to the soles of both boots, with generous transparent padding and no cropping. Use a normal seven-head adult anime proportion, not chibi. Stay very close to the supplied illustrated references: black high twin-tails with side fringe, ice-blue eyes, a small blue flame above the right eye, cropped black hooded jacket with white sleeve stripes and a white star emblem, black shorts, white belt, black gloves, and knee-high black tactical boots. Resolve inconsistencies between the references into one coherent outfit. Smooth polished cel-shaded anime rendering with clean dark outlines, restrained blue highlights, neutral standing pose, cool reserved expression with a subtle cute undertone. Also show the complete separate weapon beside her: one long black katana-like sword with a silver-blue cutting edge, based only on the weapon cue in the live-action reference. No text, no scenery, no extra character, no missing limbs, no cropped hair, no cropped boots, no sexualized pose.
+Create one original full-body anime character turnaround hero image on a transparent background. The character must be visible from the top of both twin-tails to the soles of both boots, with generous transparent padding and no cropping. Use a normal seven-head adult anime proportion, not chibi. Stay very close to the supplied illustrated references: black high twin-tails with side fringe, ice-blue eyes, a small blue flame above the viewer-right eye (character anatomical left), cropped black hooded jacket with white sleeve stripes and a white star emblem, black shorts, white belt, black gloves, and knee-high black tactical boots. Resolve inconsistencies between the references into one coherent outfit. Smooth polished cel-shaded anime rendering with clean dark outlines, restrained blue highlights, neutral standing pose, cool reserved expression with a subtle cute undertone. Also show the complete separate weapon beside her: one long black katana-like sword with a silver-blue cutting edge, based only on the weapon cue in the live-action reference. No text, no scenery, no extra character, no missing limbs, no cropped hair, no cropped boots, no sexualized pose.
 ```
 
 Save the chosen output as `assets/master/blueflame-master.png`.
@@ -369,7 +369,7 @@ Display `assets/master/blueflame-master.png`, `work/master-review/master-224.png
   "renderStyle": "smooth cel-shaded anime",
   "hair": "black high twin-tails with side fringe",
   "eyes": "ice blue",
-  "flame": "small blue flame above right eye",
+  "flame": "small blue flame above viewer-right eye (character anatomical left)",
   "jacket": "cropped black hooded jacket, white sleeve stripes, white star emblem",
   "bottom": "black shorts with white belt",
   "hands": "black gloves",
