@@ -6,6 +6,8 @@ import { createPackage, extractFile, getRawHeader } from "@electron/asar";
 import { afterEach, describe, expect, test } from "vitest";
 import {
   EXPECTED_APP_VERSION,
+  EXPECTED_PATCHED_ASAR_SHA256,
+  EXPECTED_PATCHED_HEADER_SHA256,
   PATCH_TARGETS,
   assertExpectedVersion,
   backupBundleFiles,
@@ -13,6 +15,7 @@ import {
   patchArchiveInPlace,
   restoreBundleFiles,
   verifyArchive,
+  verifyArchiveIntegrity,
 } from "../src/native-pet-patch.js";
 
 const temporaryDirectories: string[] = [];
@@ -67,6 +70,14 @@ afterEach(async () => {
 });
 
 describe("native Pet ASAR patch", () => {
+  test("pins the exact patched hashes for Codex 26.707.72221", () => {
+    expect(EXPECTED_PATCHED_ASAR_SHA256).toBe(
+      "2d8ff6b09ae040f58cf796f68b8b820e4d5965aaac61a5ac20ec6ac982279f69",
+    );
+    expect(EXPECTED_PATCHED_HEADER_SHA256).toBe(
+      "fb065e6ef3792855e4baf20b37e0a41676c78eb0cb02a948d421dc3003ffb392",
+    );
+  });
   test("patches every exact 224 limit and preserves packed file sizes", async () => {
     const { archive } = await createOriginalArchive();
     const sizesBefore = new Map(
@@ -109,6 +120,24 @@ describe("native Pet ASAR patch", () => {
       createHash("sha256").update(before.headerString).digest("hex"),
     );
     expect(() => PATCH_TARGETS.map((target) => extractFile(archive, target.path))).not.toThrow();
+    await expect(verifyArchiveIntegrity(archive)).resolves.toMatchObject({
+      filesVerified: PATCH_TARGETS.length,
+    });
+  });
+
+  test("rejects target corruption even when replacement strings still match", async () => {
+    const { archive } = await createOriginalArchive();
+    await patchArchiveInPlace(archive);
+    const bytes = await readFile(archive);
+    const raw = getRawHeader(archive);
+    const target = PATCH_TARGETS[0]!;
+    let node: any = raw.header;
+    for (const component of target.path.split("/")) node = node.files[component];
+    const contentOffset = 8 + raw.headerSize + Number(node.offset);
+    bytes[contentOffset] = bytes[contentOffset]! ^ 1;
+    await writeFile(archive, bytes);
+
+    await expect(verifyArchiveIntegrity(archive)).rejects.toThrow(/integrity/i);
   });
 
   test("is idempotent for an already-patched archive", async () => {

@@ -1,23 +1,45 @@
 #!/usr/bin/env tsx
 import { createHash } from "node:crypto";
 import { execFile as execFileCallback } from "node:child_process";
-import { mkdir, readFile, rename, rm, stat } from "node:fs/promises";
+import { readFile, rename, rm, stat } from "node:fs/promises";
 import { homedir } from "node:os";
-import { basename, dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { getRawHeader } from "@electron/asar";
+import {
+  NativePetBundlePatcher,
+  runNativePetPatcherCommand,
+  type BundleBackend,
+  type BundleInfo,
+  type ExpectedBundleHashes,
+  type TrustEvidence,
+  type VerifyMode,
+} from "../src/native-pet-bundle.js";
 import {
   EXPECTED_APP_VERSION,
   EXPECTED_ORIGINAL_ASAR_SHA256,
   EXPECTED_ORIGINAL_HEADER_SHA256,
-  assertExpectedVersion,
+  EXPECTED_PATCHED_ASAR_SHA256,
+  EXPECTED_PATCHED_HEADER_SHA256,
   inspectArchive,
   patchArchiveInPlace,
-  verifyArchive,
+  verifyArchiveIntegrity,
 } from "../src/native-pet-patch.js";
 
 const execFile = promisify(execFileCallback);
+const originalAuthority =
+  "Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)";
+const expected: ExpectedBundleHashes = {
+  version: EXPECTED_APP_VERSION,
+  originalAsarHash: EXPECTED_ORIGINAL_ASAR_SHA256,
+  originalHeaderHash: EXPECTED_ORIGINAL_HEADER_SHA256,
+  patchedAsarHash: EXPECTED_PATCHED_ASAR_SHA256,
+  patchedHeaderHash: EXPECTED_PATCHED_HEADER_SHA256,
+  originalAuthority,
+  originalTeamIdentifier: "2DC432GLL2",
+};
 const defaultApp = "/Applications/ChatGPT.app";
+const defaultStage = resolve("work/task-11/ChatGPT-patched.app");
 const defaultBackup = join(
   homedir(),
   "Library/Application Support/CodexPetPatcher/backups",
@@ -25,9 +47,73 @@ const defaultBackup = join(
   "ChatGPT.app",
 );
 
-function option(name: string, fallback?: string) {
-  const index = process.argv.indexOf(name);
-  return index === -1 ? fallback : process.argv[index + 1];
+type CommandResult = { exitCode: number; output: string };
+
+async function run(file: string, args: string[]): Promise<CommandResult> {
+  try {
+    const result = await execFile(file, args);
+    return { exitCode: 0, output: `${result.stdout}${result.stderr}` };
+  } catch (error) {
+    const commandError = error as NodeJS.ErrnoException & {
+      code?: number | string;
+      stdout?: string;
+      stderr?: string;
+    };
+    return {
+      exitCode: typeof commandError.code === "number" ? commandError.code : 1,
+      output: `${commandError.stdout ?? ""}${commandError.stderr ?? ""}`,
+    };
+  }
+}
+
+function match(output: string, expression: RegExp) {
+  return output.match(expression)?.[1]?.trim() ?? null;
+}
+
+async function trustEvidence(appPath: string): Promise<TrustEvidence> {
+  const display = await run("/usr/bin/codesign", ["-dvvv", "--verbose=4", appPath]);
+  const signature = display.output.includes("Signature=adhoc")
+    ? "adhoc"
+    : display.output.includes("Authority=")
+      ? "developer-id"
+      : "unknown";
+  const verify = await run("/usr/bin/codesign", [
+    "--verify",
+    "--deep",
+    "--strict",
+    "--verbose=4",
+    appPath,
+  ]);
+  const gatekeeper = await run("/usr/sbin/spctl", [
+    "--assess",
+    "--type",
+    "execute",
+    "--verbose=4",
+    appPath,
+  ]);
+  const codeValidOnDisk =
+    verify.exitCode === 0 || verify.output.includes("valid on disk");
+  const designatedRequirementSatisfied =
+    verify.exitCode === 0 &&
+    !verify.output.includes("does not satisfy its designated Requirement");
+  return {
+    signature,
+    authority: match(display.output, /^Authority=(Developer ID Application:.*)$/m),
+    teamIdentifier:
+      match(display.output, /^TeamIdentifier=(.*)$/m) === "not set"
+        ? null
+        : match(display.output, /^TeamIdentifier=(.*)$/m),
+    notarizationStapled: display.output.includes("Notarization Ticket=stapled"),
+    codeValidOnDisk,
+    designatedRequirementSatisfied,
+    gatekeeper:
+      gatekeeper.exitCode === 0
+        ? "accepted"
+        : gatekeeper.output.includes("rejected")
+          ? "rejected"
+          : "error",
+    gatekeeperSource: match(gatekeeper.output, /^source=(.*)$/m),
+  };
 }
 
 async function sha256(path: string) {
@@ -35,207 +121,126 @@ async function sha256(path: string) {
 }
 
 async function plistValue(plist: string, key: string) {
-  const { stdout } = await execFile("/usr/bin/plutil", ["-extract", key, "raw", plist]);
-  return stdout.trim();
+  const result = await run("/usr/bin/plutil", ["-extract", key, "raw", plist]);
+  if (result.exitCode !== 0) throw new Error(result.output);
+  return result.output.trim();
 }
 
-async function bundleInfo(appPath: string) {
-  const plist = join(appPath, "Contents/Info.plist");
-  const asar = join(appPath, "Contents/Resources/app.asar");
-  const version = await plistValue(plist, "CFBundleShortVersionString");
-  const recordedHeaderHash = await plistValue(
-    plist,
-    "ElectronAsarIntegrity.Resources/app\\.asar.hash",
-  ).catch(async () => {
-    const { stdout } = await execFile("/usr/libexec/PlistBuddy", [
-      "-c",
-      "Print :ElectronAsarIntegrity:Resources/app.asar:hash",
-      plist,
-    ]);
-    return stdout.trim();
-  });
-  const rawHeader = getRawHeader(asar);
-  return {
-    appPath,
-    asar,
-    plist,
-    version,
-    asarHash: await sha256(asar),
-    archiveState: (await inspectArchive(asar)).state,
-    headerHash: createHash("sha256").update(rawHeader.headerString).digest("hex"),
-    recordedHeaderHash,
-  };
-}
-
-async function assertOriginal(info: Awaited<ReturnType<typeof bundleInfo>>) {
-  assertExpectedVersion(info.version);
-  if (info.archiveState !== "original") {
-    throw new Error(`Expected original ASAR, found ${info.archiveState}`);
-  }
-  if (info.asarHash !== EXPECTED_ORIGINAL_ASAR_SHA256) {
-    throw new Error(`Unexpected app.asar SHA256 ${info.asarHash}`);
-  }
-  if (
-    info.headerHash !== EXPECTED_ORIGINAL_HEADER_SHA256 ||
-    info.recordedHeaderHash !== EXPECTED_ORIGINAL_HEADER_SHA256
-  ) {
-    throw new Error(
-      `Unexpected ASAR integrity header ${info.headerHash}/${info.recordedHeaderHash}`,
-    );
-  }
-}
-
-async function verifyCodeSignature(appPath: string) {
-  await execFile("/usr/bin/codesign", ["--verify", "--deep", "--strict", "--verbose=4", appPath]);
-}
-
-async function updateRecordedHeaderHash(plist: string, headerHash: string) {
-  await execFile("/usr/libexec/PlistBuddy", [
+async function updateRecordedHeaderHash(plist: string, hash: string) {
+  const result = await run("/usr/libexec/PlistBuddy", [
     "-c",
-    `Set :ElectronAsarIntegrity:Resources/app.asar:hash ${headerHash}`,
+    `Set :ElectronAsarIntegrity:Resources/app.asar:hash ${hash}`,
     plist,
   ]);
+  if (result.exitCode !== 0) throw new Error(result.output);
 }
 
-async function createOriginalBackup(appPath: string, backupPath: string) {
-  try {
-    const existing = await bundleInfo(backupPath);
-    await assertOriginal(existing);
-    await verifyCodeSignature(backupPath);
-    return { backupPath, reused: true };
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      const backupExists = await stat(backupPath).then(
-        () => true,
-        (statError: NodeJS.ErrnoException) => {
-          if (statError.code === "ENOENT") return false;
-          throw statError;
-        },
-      );
-      if (backupExists) throw error;
+class MacBundleBackend implements BundleBackend {
+  async inspect(appPath: string): Promise<BundleInfo> {
+    const plist = join(appPath, "Contents/Info.plist");
+    const asar = join(appPath, "Contents/Resources/app.asar");
+    const rawHeader = getRawHeader(asar);
+    const headerHash = createHash("sha256")
+      .update(rawHeader.headerString)
+      .digest("hex");
+    let targetIntegrityValid = true;
+    try {
+      await verifyArchiveIntegrity(asar);
+    } catch {
+      targetIntegrityValid = false;
     }
+    return {
+      version: await plistValue(plist, "CFBundleShortVersionString"),
+      archiveState: (await inspectArchive(asar)).state,
+      asarHash: await sha256(asar),
+      headerHash,
+      recordedHeaderHash: await plistValue(
+        plist,
+        "ElectronAsarIntegrity.Resources/app\\.asar.hash",
+      ),
+      targetIntegrityValid,
+      trust: await trustEvidence(appPath),
+    };
   }
-  await mkdir(dirname(backupPath), { recursive: true });
-  const temporary = `${backupPath}.staging-${process.pid}`;
-  await rm(temporary, { recursive: true, force: true });
-  await execFile("/usr/bin/ditto", [appPath, temporary]);
-  const copied = await bundleInfo(temporary);
-  await assertOriginal(copied);
-  await verifyCodeSignature(temporary);
-  await rename(temporary, backupPath);
-  return { backupPath, reused: false };
-}
 
-async function stageBundle(appPath: string, outputPath: string, backupPath: string) {
-  if (outputPath === appPath || basename(outputPath) !== "ChatGPT-patched.app") {
-    throw new Error(
-      "Unsafe staging path: output must be a distinct ChatGPT-patched.app bundle",
+  async bundleExists(path: string) {
+    return stat(path).then(
+      () => true,
+      (error: NodeJS.ErrnoException) => {
+        if (error.code === "ENOENT") return false;
+        throw error;
+      },
     );
   }
-  const source = await bundleInfo(appPath);
-  await assertOriginal(source);
-  await verifyCodeSignature(appPath);
-  await createOriginalBackup(appPath, backupPath);
 
-  await rm(outputPath, { recursive: true, force: true });
-  await mkdir(dirname(outputPath), { recursive: true });
-  await execFile("/usr/bin/ditto", [appPath, outputPath]);
-  const stagedAsar = join(outputPath, "Contents/Resources/app.asar");
-  const patch = await patchArchiveInPlace(stagedAsar);
-  await updateRecordedHeaderHash(join(outputPath, "Contents/Info.plist"), patch.headerHash);
-
-  // Only the outer seal changed. Preserve the app's original entitlements and
-  // runtime flags while leaving every nested OpenAI-signed helper untouched.
-  await execFile("/usr/bin/codesign", [
-    "--force",
-    "--sign",
-    "-",
-    "--preserve-metadata=entitlements,requirements,flags,runtime",
-    outputPath,
-  ]);
-  await verifyCodeSignature(outputPath);
-  const verified = await verifyBundle(outputPath);
-  return { patch, verified, backupPath, outputPath };
-}
-
-async function verifyBundle(appPath: string) {
-  const info = await bundleInfo(appPath);
-  assertExpectedVersion(info.version);
-  await verifyArchive(info.asar);
-  if (info.headerHash !== info.recordedHeaderHash) {
-    throw new Error(
-      `Info.plist ASAR hash mismatch ${info.recordedHeaderHash} != ${info.headerHash}`,
+  async copyBundle(source: string, destination: string) {
+    const result = await run("/usr/bin/ditto", [source, destination]);
+    if (result.exitCode !== 0) throw new Error(result.output);
+  }
+  async removeBundle(path: string) {
+    await rm(path, { recursive: true, force: true });
+  }
+  async renameBundle(source: string, destination: string) {
+    await rename(source, destination);
+  }
+  async patchBundle(appPath: string) {
+    const asar = join(appPath, "Contents/Resources/app.asar");
+    const result = await patchArchiveInPlace(asar);
+    if (result.headerHash !== EXPECTED_PATCHED_HEADER_SHA256) {
+      throw new Error(`Unexpected patched header hash ${result.headerHash}`);
+    }
+    if ((await sha256(asar)) !== EXPECTED_PATCHED_ASAR_SHA256) {
+      throw new Error("Unexpected patched whole-ASAR hash");
+    }
+    await verifyArchiveIntegrity(asar);
+    await updateRecordedHeaderHash(
+      join(appPath, "Contents/Info.plist"),
+      result.headerHash,
     );
   }
-  await verifyCodeSignature(appPath);
-  return info;
+  async signForensicStage(appPath: string) {
+    const result = await run("/usr/bin/codesign", [
+      "--force",
+      "--sign",
+      "-",
+      "--preserve-metadata=entitlements,requirements,flags,runtime",
+      appPath,
+    ]);
+    if (result.exitCode !== 0) throw new Error(result.output);
+  }
+  async isAppRunning() {
+    return (await run("/usr/bin/pgrep", ["-x", "ChatGPT"])).exitCode === 0;
+  }
 }
 
-async function restoreBundle(appPath: string, backupPath: string) {
-  if (appPath === backupPath) {
-    throw new Error("Unsafe restore: app and backup paths must be distinct");
-  }
-  const backup = await bundleInfo(backupPath);
-  await assertOriginal(backup);
-  await verifyCodeSignature(backupPath);
-  const { stdout } = await execFile("/usr/bin/pgrep", ["-x", "ChatGPT"]).catch(() => ({ stdout: "" }));
-  if (stdout.trim()) {
-    throw new Error(
-      "BLOCKED: ChatGPT is running. Quit it manually before whole-bundle restore; the patcher will never quit it.",
-    );
-  }
-  const temporary = join(dirname(appPath), `.${basename(appPath)}.restore-${process.pid}`);
-  await rm(temporary, { recursive: true, force: true });
-  await execFile("/usr/bin/ditto", [backupPath, temporary]);
-  const displaced = `${appPath}.displaced-${Date.now()}`;
-  await rename(appPath, displaced);
-  try {
-    await rename(temporary, appPath);
-    await verifyCodeSignature(appPath);
-    await rm(displaced, { recursive: true, force: true });
-  } catch (error) {
-    await rename(displaced, appPath).catch(() => undefined);
-    throw error;
-  }
-  return { appPath, backupPath };
+function option(name: string, fallback?: string) {
+  const index = process.argv.indexOf(name);
+  return index === -1 ? fallback : process.argv[index + 1];
 }
 
 async function main() {
   const command = process.argv[2];
-  const appPath = resolve(option("--app", defaultApp)!);
-  const backupPath = resolve(option("--backup", defaultBackup)!);
+  const app = resolve(option("--app", defaultApp)!);
+  const backend = new MacBundleBackend();
+  const patcher = new NativePetBundlePatcher(backend, expected);
   if (command === "analyze") {
-    console.log(JSON.stringify(await bundleInfo(appPath), null, 2));
+    console.log(JSON.stringify(await backend.inspect(app), null, 2));
     return;
   }
+  const args = [command, "--app", app];
   if (command === "verify") {
-    console.log(JSON.stringify(await verifyBundle(appPath), null, 2));
-    return;
+    args.push("--mode", option("--mode", "original") as VerifyMode);
+  } else {
+    args.push("--backup", resolve(option("--backup", defaultBackup)!));
   }
   if (command === "stage") {
-    const outputPath = resolve(
-      option("--output", join(process.cwd(), "work/task-11/ChatGPT-patched.app"))!,
-    );
-    console.log(JSON.stringify(await stageBundle(appPath, outputPath, backupPath), null, 2));
-    return;
-  }
-  if (command === "restore") {
-    console.log(JSON.stringify(await restoreBundle(appPath, backupPath), null, 2));
-    return;
+    args.push("--output", resolve(option("--output", defaultStage)!));
   }
   if (command === "apply") {
-    const info = await bundleInfo(appPath);
-    if (info.archiveState === "patched") {
-      console.log(JSON.stringify(await verifyBundle(appPath), null, 2));
-      return;
-    }
-    await assertOriginal(info);
-    await verifyCodeSignature(appPath);
-    throw new Error(
-      "BLOCKED: live apply would replace OpenAI's notarized Developer ID seal with an ad-hoc signature. Stage and verify are supported, but this patcher will not weaken the live app's trust/update/keychain posture.",
-    );
+    args.push("--staged", resolve(option("--staged", defaultStage)!));
   }
-  throw new Error("Usage: native-pet-patcher <analyze|stage|apply|verify|restore> [--app PATH] [--backup PATH] [--output PATH]");
+  const result = await runNativePetPatcherCommand(args, patcher);
+  console.log(JSON.stringify(result, null, 2));
 }
 
 main().catch((error) => {

@@ -8,6 +8,10 @@ export const EXPECTED_ORIGINAL_ASAR_SHA256 =
   "b5da51e5df6e996076e4cb19045cec46dd4c08cf61c19cdbc5cb426b8413b73c";
 export const EXPECTED_ORIGINAL_HEADER_SHA256 =
   "9d7676e404b1b984f571edc89db3786bc2478608d343762b5e7d6d1616780f78";
+export const EXPECTED_PATCHED_ASAR_SHA256 =
+  "2d8ff6b09ae040f58cf796f68b8b820e4d5965aaac61a5ac20ec6ac982279f69";
+export const EXPECTED_PATCHED_HEADER_SHA256 =
+  "fb065e6ef3792855e4baf20b37e0a41676c78eb0cb02a948d421dc3003ffb392";
 
 type Replacement = { before: string; after: string; count: number };
 type PatchTarget = { path: string; replacements: readonly Replacement[] };
@@ -261,7 +265,43 @@ export async function verifyArchive(archivePath: string) {
     throw new Error(`ASAR is not fully patched: ${result.state}`);
   }
   for (const target of PATCH_TARGETS) extractFile(archivePath, target.path);
+  await verifyArchiveIntegrity(archivePath);
   return result;
+}
+
+export async function verifyArchiveIntegrity(archivePath: string) {
+  const archive = await readFile(archivePath);
+  const rawHeader = getRawHeader(archivePath);
+  const header = rawHeader.header as AsarNode;
+  for (const target of PATCH_TARGETS) {
+    const node = findNode(header, target.path);
+    if (node.offset == null || node.size == null || !node.integrity) {
+      throw new Error(`Missing integrity metadata for ${target.path}`);
+    }
+    const start = 8 + rawHeader.headerSize + Number(node.offset);
+    const content = archive.subarray(start, start + node.size);
+    const actualHash = sha256(content);
+    if (actualHash !== node.integrity.hash) {
+      throw new Error(`Integrity hash mismatch for ${target.path}`);
+    }
+    const actualBlocks: string[] = [];
+    for (
+      let offset = 0;
+      offset < content.byteLength;
+      offset += node.integrity.blockSize
+    ) {
+      actualBlocks.push(
+        sha256(content.subarray(offset, offset + node.integrity.blockSize)),
+      );
+    }
+    if (
+      actualBlocks.length !== node.integrity.blocks.length ||
+      actualBlocks.some((hash, index) => hash !== node.integrity!.blocks[index])
+    ) {
+      throw new Error(`Integrity block list mismatch for ${target.path}`);
+    }
+  }
+  return { filesVerified: PATCH_TARGETS.length };
 }
 
 export function assertExpectedVersion(version: string) {
