@@ -136,6 +136,24 @@ export class NativePetBundlePatcher {
     }
   }
 
+  private async detectTrustedState(path: string) {
+    const errors: unknown[] = [];
+    try {
+      return await this.verify(path, "live-safe");
+    } catch (error) {
+      errors.push(error);
+    }
+    try {
+      return await this.verify(path, "original");
+    } catch (error) {
+      errors.push(error);
+    }
+    throw new AggregateError(
+      errors,
+      "Current app is neither live-safe nor original-trusted",
+    );
+  }
+
   private assertDistinctPaths(...paths: string[]) {
     if (new Set(paths).size !== paths.length) {
       throw new Error("App, staging, and backup paths must be distinct");
@@ -175,7 +193,10 @@ export class NativePetBundlePatcher {
 
   async apply(appPath: string, stagedPath: string, backupPath: string) {
     this.assertDistinctPaths(appPath, stagedPath, backupPath);
-    await this.verify(appPath, "original");
+    const current = await this.detectTrustedState(appPath);
+    if (current.mode === "live-safe") {
+      return { ...current, reused: true };
+    }
     // Mandatory no-mutation gate. The forensic ad-hoc stage fails here.
     try {
       await this.verify(stagedPath, "live-safe");
@@ -196,7 +217,8 @@ export class NativePetBundlePatcher {
       `.${basename(appPath)}.apply-${Date.now()}`,
     );
     await this.backend.copyBundle(stagedPath, replacement);
-    return this.swapVerified(appPath, replacement, "live-safe");
+    const applied = await this.swapVerified(appPath, replacement, "live-safe");
+    return { ...applied, reused: false };
   }
 
   async restore(appPath: string, backupPath: string) {
@@ -221,6 +243,7 @@ export class NativePetBundlePatcher {
     replacementPath: string,
     mode: VerifyMode,
   ) {
+    const prior = await this.detectTrustedState(appPath);
     const displaced = `${appPath}.displaced-${Date.now()}`;
     const failed = `${appPath}.failed-${Date.now()}`;
     await this.backend.renameBundle(appPath, displaced);
@@ -244,7 +267,14 @@ export class NativePetBundlePatcher {
         rollbackErrors.push(error);
       }
       try {
-        await this.verify(appPath, "original");
+        const restored = await this.verify(appPath, prior.mode);
+        assertEqual(restored.asarHash, prior.asarHash, "rollback ASAR hash");
+        assertEqual(restored.headerHash, prior.headerHash, "rollback header hash");
+        assertEqual(
+          restored.recordedHeaderHash,
+          prior.recordedHeaderHash,
+          "rollback recorded header hash",
+        );
       } catch (error) {
         rollbackErrors.push(error);
       }

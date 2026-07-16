@@ -57,12 +57,13 @@ async function writeBundle(path: string, info: BundleInfo) {
 class FixtureBackend implements BundleBackend {
   running = false;
   mutationCount = 0;
-  failNextPostSwapVerification = false;
+  failAfterNextInstall = false;
+  failNextLiveInspect = false;
   failRollbackRename = false;
 
   async inspect(path: string): Promise<BundleInfo> {
-    if (this.failNextPostSwapVerification && path.endsWith("Live.app")) {
-      this.failNextPostSwapVerification = false;
+    if (this.failNextLiveInspect && path.endsWith("Live.app")) {
+      this.failNextLiveInspect = false;
       throw new Error("post-swap verification failed");
     }
     return JSON.parse(await readFile(join(path, "bundle-state.json"), "utf8"));
@@ -88,6 +89,10 @@ class FixtureBackend implements BundleBackend {
     }
     await mkdir(dirname(destination), { recursive: true });
     await rename(source, destination);
+    if (this.failAfterNextInstall && destination.endsWith("Live.app")) {
+      this.failAfterNextInstall = false;
+      this.failNextLiveInspect = true;
+    }
   }
   async patchBundle(path: string) {
     this.mutationCount += 1;
@@ -229,11 +234,43 @@ describe("native Pet bundle CLI semantics", () => {
     expect(await readFile(join(live, "bundle-state.json"), "utf8")).toBe(liveBefore);
   });
 
+  test("apply reuses an already live-safe patched app without mutation", async () => {
+    const { live, stage, backup, backend, patcher } = await fixture();
+    const info = JSON.parse(await readFile(join(live, "bundle-state.json"), "utf8"));
+    await writeBundle(live, {
+      ...info,
+      archiveState: "patched",
+      asarHash: expected.patchedAsarHash,
+      headerHash: expected.patchedHeaderHash,
+      recordedHeaderHash: expected.patchedHeaderHash,
+      trust: originalTrust,
+    });
+    const mutations = backend.mutationCount;
+    await expect(patcher.apply(live, stage, backup)).resolves.toMatchObject({
+      classification: "live-safe",
+      reused: true,
+    });
+    expect(backend.mutationCount).toBe(mutations);
+  });
+
+  test("apply rejects a corrupted current app rather than treating it as original", async () => {
+    const { live, stage, backup, backend, patcher } = await fixture();
+    const info = JSON.parse(await readFile(join(live, "bundle-state.json"), "utf8"));
+    await writeBundle(live, { ...info, targetIntegrityValid: false });
+    const mutations = backend.mutationCount;
+    await expect(patcher.apply(live, stage, backup)).rejects.toThrow(
+      /neither live-safe nor original/i,
+    );
+    expect(backend.mutationCount).toBe(mutations);
+  });
+
   test("whole-bundle restore replaces a stopped app with the verified original", async () => {
     const { live, stage, backup, patcher } = await fixture();
     await patcher.stage(live, stage, backup);
     await rm(live, { recursive: true, force: true });
     await cp(stage, live, { recursive: true });
+    const patched = JSON.parse(await readFile(join(live, "bundle-state.json"), "utf8"));
+    await writeBundle(live, { ...patched, trust: originalTrust });
     await runNativePetPatcherCommand(
       ["restore", "--app", live, "--backup", backup],
       patcher,
@@ -244,7 +281,7 @@ describe("native Pet bundle CLI semantics", () => {
   test("post-swap failure restores displaced original into an empty app path", async () => {
     const { live, stage, backup, backend, patcher } = await fixture();
     await patcher.stage(live, stage, backup);
-    backend.failNextPostSwapVerification = true;
+    backend.failAfterNextInstall = true;
     await expect(patcher.restore(live, backup)).rejects.toThrow(/post-swap/i);
     await expect(patcher.verify(live, "original")).resolves.toBeDefined();
   });
@@ -254,7 +291,7 @@ describe("native Pet bundle CLI semantics", () => {
     await patcher.stage(live, stage, backup);
     const info = JSON.parse(await readFile(join(stage, "bundle-state.json"), "utf8"));
     await writeBundle(stage, { ...info, trust: originalTrust });
-    backend.failNextPostSwapVerification = true;
+    backend.failAfterNextInstall = true;
     await expect(patcher.apply(live, stage, backup)).rejects.toThrow(/post-swap/i);
     await expect(patcher.verify(live, "original")).resolves.toBeDefined();
   });
@@ -262,10 +299,30 @@ describe("native Pet bundle CLI semantics", () => {
   test("rollback failures are surfaced as an aggregate error", async () => {
     const { live, backup, backend, patcher } = await fixture();
     await cp(live, backup, { recursive: true });
-    backend.failNextPostSwapVerification = true;
+    backend.failAfterNextInstall = true;
     backend.failRollbackRename = true;
     await expect(patcher.restore(live, backup)).rejects.toBeInstanceOf(
       AggregateError,
     );
+  });
+
+  test("restore rollback preserves a previously live-safe patched app", async () => {
+    const { live, backup, backend, patcher } = await fixture();
+    const original = JSON.parse(await readFile(join(live, "bundle-state.json"), "utf8"));
+    await cp(live, backup, { recursive: true });
+    await writeBundle(live, {
+      ...original,
+      archiveState: "patched",
+      asarHash: expected.patchedAsarHash,
+      headerHash: expected.patchedHeaderHash,
+      recordedHeaderHash: expected.patchedHeaderHash,
+      trust: originalTrust,
+    });
+    backend.failAfterNextInstall = true;
+    await expect(patcher.restore(live, backup)).rejects.toThrow(/post-swap/i);
+    await expect(patcher.verify(live, "live-safe")).resolves.toMatchObject({
+      classification: "live-safe",
+      asarHash: expected.patchedAsarHash,
+    });
   });
 });

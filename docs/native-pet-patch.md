@@ -30,9 +30,14 @@ Verification modes are deliberately distinct:
   OpenAI signing/Gatekeeper posture.
 
 `apply` runs `live-safe` before any mutation. The current forensic stage fails
-that gate, so the notarized live app remains untouched. `restore` never quits
-ChatGPT, refuses while it is running, and rolls back whole-bundle swap failures
-without hiding rollback errors.
+that gate, so the notarized live app remains untouched. If the current app is
+already the exact `live-safe` patched bundle, apply is idempotent and returns
+`reused: true` with no mutation. A current app that passes neither `live-safe`
+nor exact `original` verification is treated as corrupt/unknown and rejected.
+`restore` never quits ChatGPT, refuses while it is running, and rolls back
+whole-bundle swap failures without hiding rollback errors. Rollback pins and
+restores the exact pre-swap mode and hashes, including a previously live-safe
+patched app.
 
 Official Codex updates replace `app.asar`. Re-run `analyze` after an update;
 the patcher rejects every version or exact source/hash combination it has not
