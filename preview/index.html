@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BLACK★ROCK SHOOTER — Pet motion review</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --void: #070b13;
+        --panel: #0d1420;
+        --panel-soft: #121c2a;
+        --line: #22334a;
+        --text: #edf5ff;
+        --muted: #8294aa;
+        --flame: #00a8ff;
+        --flame-hot: #7bdcff;
+        --pet-size: 113px;
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--void);
+        color: var(--text);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 58% 42%, rgb(0 168 255 / 10%), transparent 35%),
+          linear-gradient(145deg, #080d16, var(--void) 62%);
+      }
+
+      button, input, select { font: inherit; }
+
+      .review-shell {
+        display: grid;
+        grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .control-deck {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        padding: clamp(24px, 4vw, 48px);
+        border-right: 1px solid var(--line);
+        background: rgb(8 13 22 / 86%);
+        backdrop-filter: blur(18px);
+      }
+
+      .eyebrow,
+      .readout-label,
+      .stage-index {
+        margin: 0;
+        color: var(--flame-hot);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 11ch;
+        margin: 8px 0 0;
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        font-size: clamp(34px, 5vw, 54px);
+        font-weight: 900;
+        letter-spacing: -0.025em;
+        line-height: 0.88;
+        text-transform: uppercase;
+      }
+
+      .intro {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .controls { display: grid; gap: 22px; }
+
+      .field { display: grid; gap: 9px; }
+
+      .field-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        color: #b7c8da;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      select {
+        width: 100%;
+        border: 1px solid #2c4058;
+        border-radius: 3px;
+        padding: 11px 36px 11px 12px;
+        background: var(--panel-soft);
+        color: var(--text);
+      }
+
+      select:focus-visible, input:focus-visible {
+        outline: 2px solid var(--flame-hot);
+        outline-offset: 3px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--flame);
+        cursor: ew-resize;
+      }
+
+      .ticks {
+        display: flex;
+        justify-content: space-between;
+        color: #53677f;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+      }
+
+      .readouts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        margin-top: auto;
+        border: 1px solid var(--line);
+        background: var(--line);
+      }
+
+      .readout {
+        min-width: 0;
+        padding: 12px;
+        background: var(--panel);
+      }
+
+      .readout strong {
+        display: block;
+        margin-top: 5px;
+        overflow: hidden;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .motion-stage {
+        position: relative;
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .motion-stage::before {
+        position: absolute;
+        z-index: -2;
+        width: min(62vw, 680px);
+        aspect-ratio: 1;
+        border: 1px solid rgb(87 181 235 / 12%);
+        border-radius: 50%;
+        box-shadow: 0 0 100px rgb(0 143 255 / 8%) inset;
+        content: "";
+      }
+
+      .motion-stage::after {
+        position: absolute;
+        z-index: -1;
+        width: min(68vw, 760px);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgb(0 168 255 / 52%), transparent);
+        box-shadow: 0 0 18px var(--flame);
+        content: "";
+      }
+
+      .stage-index {
+        position: absolute;
+        top: clamp(24px, 4vw, 48px);
+        right: clamp(24px, 4vw, 48px);
+        color: #4b627c;
+      }
+
+      .pet-frame {
+        position: relative;
+        display: grid;
+        min-width: 224px;
+        min-height: 243px;
+        place-items: center;
+      }
+
+      #pet {
+        width: var(--pet-size);
+        aspect-ratio: 192 / 208;
+        background-image: url("/dist/blueflame/spritesheet.webp");
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: 800% 1100%;
+        filter: drop-shadow(0 16px 15px rgb(0 0 0 / 48%));
+        image-rendering: pixelated;
+      }
+
+      .frame-line {
+        position: absolute;
+        bottom: -28px;
+        left: 50%;
+        width: min(360px, 70vw);
+        height: 1px;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg, transparent, #28425d 25%, #28425d 75%, transparent);
+      }
+
+      .frame-line::after {
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--flame-hot);
+        box-shadow: 0 0 12px var(--flame);
+        content: "";
+      }
+
+      @media (max-width: 760px) {
+        .review-shell { grid-template-columns: 1fr; }
+        .control-deck { border-right: 0; border-bottom: 1px solid var(--line); }
+        .motion-stage { min-height: 520px; }
+        .stage-index { top: 24px; right: 24px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .motion-stage::after { box-shadow: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="review-shell">
+      <aside class="control-deck" aria-label="Pet review controls">
+        <header>
+          <p class="eyebrow">Native motion review</p>
+          <h1>Black★Rock Shooter</h1>
+          <p class="intro">Inspect every Codex state at the exact v2 sprite geometry and native size range.</p>
+        </header>
+
+        <section class="controls" aria-label="Preview settings">
+          <label class="field">
+            <span class="field-heading"><span>State</span><span id="state-count">01 / 09</span></span>
+            <select id="state" aria-label="State"></select>
+          </label>
+
+          <label class="field">
+            <span class="field-heading"><span>Pet size</span><span data-testid="size-value">113 px</span></span>
+            <input id="size" aria-label="Pet size" type="range" min="80" max="224" value="113" />
+            <span class="ticks" aria-hidden="true"><span>80</span><span>default 113</span><span>224</span></span>
+          </label>
+        </section>
+
+        <section class="readouts" aria-label="Native sprite readouts">
+          <div class="readout"><p class="readout-label">Frame</p><strong id="frame-readout">01 / 06</strong></div>
+          <div class="readout"><p class="readout-label">Cell</p><strong>192 × 208</strong></div>
+          <div class="readout"><p class="readout-label">Cadence</p><strong>160 ms</strong></div>
+          <div class="readout"><p class="readout-label">Weapon</p><strong id="weapon-readout">Hidden</strong></div>
+        </section>
+      </aside>
+
+      <section class="motion-stage" aria-label="Animated pet stage">
+        <p class="stage-index">Sprite v2 · 8 × 11</p>
+        <div class="pet-frame">
+          <div id="pet" data-testid="pet" data-state="idle" data-frame="0" data-weapon="false" role="img" aria-label="BLACK ROCK SHOOTER idle animation"></div>
+          <span class="frame-line" aria-hidden="true"></span>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/preview/main.ts"></script>
+  </body>
+</html>
