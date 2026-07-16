@@ -1,4 +1,10 @@
-# Codex Blueflame Pet Implementation Plan
+# Codex BLACK★ROCK SHOOTER Pet Implementation Plan
+
+> **Historical execution record (2026-07-17):** The unchecked boxes below are
+> preserved verbatim as the original implementation recipe; they are not a live
+> progress tracker. Actual completion and remaining manual acceptance are
+> recorded in `.superpowers/sdd/progress.md` and
+> `docs/verification/2026-07-17-blueflame-pet.md`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -11,7 +17,7 @@
 ## Global Constraints
 
 - The character uses a normal seven-head anime proportion and must remain visible from head to toe in every frame.
-- The visual identity stays close to the supplied references: black high twin-tails, side fringe, ice-blue eyes, blue flame above the right eye, cropped black hooded jacket with white sleeve stripe and star mark, black shorts, white belt, black gloves, and knee-high tactical boots.
+- The visual identity stays close to the supplied references: black high twin-tails, side fringe, ice-blue eyes, blue flame above the viewer-right eye (character anatomical left), cropped black hooded jacket with white sleeve stripe and star mark, black shorts, white belt, black gloves, and knee-high tactical boots.
 - Rendering is smooth cel-shaded anime, not chibi and not intentionally coarse pixel art.
 - The black long sword with a silver-blue edge is hidden for `idle`, `waiting`, `review`, and `jumping`; it is visible for `running`, `running-left`, `running-right`, `waving`, and `failed` according to the approved actions.
 - Character face, hair, outfit, body ratio, colors, and weapon design must stay consistent across all frames.
@@ -338,7 +344,7 @@ Expected: three reference files exist and `shasum -a 256 assets/references/*` pr
 Use all three references and this exact art direction:
 
 ```text
-Create one original full-body anime character turnaround hero image on a transparent background. The character must be visible from the top of both twin-tails to the soles of both boots, with generous transparent padding and no cropping. Use a normal seven-head adult anime proportion, not chibi. Stay very close to the supplied illustrated references: black high twin-tails with side fringe, ice-blue eyes, a small blue flame above the right eye, cropped black hooded jacket with white sleeve stripes and a white star emblem, black shorts, white belt, black gloves, and knee-high black tactical boots. Resolve inconsistencies between the references into one coherent outfit. Smooth polished cel-shaded anime rendering with clean dark outlines, restrained blue highlights, neutral standing pose, cool reserved expression with a subtle cute undertone. Also show the complete separate weapon beside her: one long black katana-like sword with a silver-blue cutting edge, based only on the weapon cue in the live-action reference. No text, no scenery, no extra character, no missing limbs, no cropped hair, no cropped boots, no sexualized pose.
+Create one original full-body anime character turnaround hero image on a transparent background. The character must be visible from the top of both twin-tails to the soles of both boots, with generous transparent padding and no cropping. Use a normal seven-head adult anime proportion, not chibi. Stay very close to the supplied illustrated references: black high twin-tails with side fringe, ice-blue eyes, a small blue flame above the viewer-right eye (character anatomical left), cropped black hooded jacket with white sleeve stripes and a white star emblem, black shorts, white belt, black gloves, and knee-high black tactical boots. Resolve inconsistencies between the references into one coherent outfit. Smooth polished cel-shaded anime rendering with clean dark outlines, restrained blue highlights, neutral standing pose, cool reserved expression with a subtle cute undertone. Also show the complete separate weapon beside her: one long black katana-like sword with a silver-blue cutting edge, based only on the weapon cue in the live-action reference. No text, no scenery, no extra character, no missing limbs, no cropped hair, no cropped boots, no sexualized pose.
 ```
 
 Save the chosen output as `assets/master/blueflame-master.png`.
@@ -364,12 +370,12 @@ Display `assets/master/blueflame-master.png`, `work/master-review/master-224.png
 ```json
 // assets/master/character-lock.json
 {
-  "name": "Blueflame",
+  "name": "BLACK★ROCK SHOOTER",
   "proportion": "seven-head adult anime",
   "renderStyle": "smooth cel-shaded anime",
   "hair": "black high twin-tails with side fringe",
   "eyes": "ice blue",
-  "flame": "small blue flame above right eye",
+  "flame": "small blue flame above viewer-right eye (character anatomical left)",
   "jacket": "cropped black hooded jacket, white sleeve stripes, white star emblem",
   "bottom": "black shorts with white belt",
   "hands": "black gloves",
@@ -384,7 +390,7 @@ Display `assets/master/blueflame-master.png`, `work/master-review/master-224.png
 
 ```bash
 git add assets/references assets/master
-git commit -m "art: lock Blueflame character master"
+git commit -m "art: lock BLACK★ROCK SHOOTER character master"
 ```
 
 ---
@@ -421,7 +427,7 @@ mkdir -p assets/frames/{idle,running-right,running-left,waving,jumping,failed,wa
 For every state, use the approved master as the referenced image and preserve character identity exactly. Apply this shared instruction to every generation:
 
 ```text
-Use the attached approved Blueflame master as an immutable character reference. Preserve the same face, seven-head body ratio, hair length, twin-tail anchors, outfit seams, star emblem, belt, gloves, boots, colors, cel-shading, and sword design. Draw the complete body from hair tips to boot soles inside a 192x208 transparent frame with consistent foot baseline and scale. No scenery, text, extra limbs, cropping, outfit changes, face changes, or camera changes.
+Use the attached approved BLACK★ROCK SHOOTER master as an immutable character reference. Preserve the same face, seven-head body ratio, hair length, twin-tail anchors, outfit seams, star emblem, belt, gloves, boots, colors, cel-shading, and sword design. Draw the complete body from hair tips to boot soles inside a 192x208 transparent frame with consistent foot baseline and scale. No scenery, text, extra limbs, cropping, outfit changes, face changes, or camera changes.
 ```
 
 Generate these exact action arcs:
@@ -441,13 +447,23 @@ Normalize every accepted frame to exactly `192 × 208` transparent PNG and save 
 
 - [ ] **Step 3: Validate all generated frames**
 
-Run: `npm run validate:pet`
+Run:
+
+```bash
+npx tsx -e 'import { assertFrame } from "./src/validate-frame.ts"; import { STATES } from "./src/pet-spec.ts"; import { join } from "node:path"; let count=0; for (const [state,spec] of Object.entries(STATES)) for (let column=0; column<spec.frames; column+=1) { await assertFrame(join("assets/frames",state,`${column}.png`)); count+=1; } for (let direction=0; direction<16; direction+=1) { await assertFrame(join("assets/frames","look",`${direction}.png`)); count+=1; } console.log(`${count} frames valid; 0 errors`)'
+```
 
 Expected: `73 frames valid; 0 errors`.
 
 - [ ] **Step 4: Create a contact sheet and review consistency**
 
-The CLI added in Task 7 must support `tsx src/cli.ts contact-sheet`; run it and inspect `work/frame-review/contact-sheet.png`. Record checks in:
+Run this self-contained compositor before the Task 7 CLI exists, then inspect `work/frame-review/contact-sheet.png`:
+
+```bash
+npx tsx -e 'import sharp from "sharp"; import { mkdir } from "node:fs/promises"; import { STATES } from "./src/pet-spec.ts"; import { join } from "node:path"; const overlays=[]; for (const [state,spec] of Object.entries(STATES)) for (let column=0; column<spec.frames; column+=1) overlays.push({input:join("assets/frames",state,`${column}.png`),left:column*192,top:spec.row*208}); for (let direction=0; direction<16; direction+=1) overlays.push({input:join("assets/frames","look",`${direction}.png`),left:(direction%8)*192,top:(9+Math.floor(direction/8))*208}); await mkdir("work/frame-review",{recursive:true}); await sharp({create:{width:1536,height:2288,channels:4,background:{r:28,g:31,b:38,alpha:1}}}).composite(overlays).png().toFile("work/frame-review/contact-sheet.png")'
+```
+
+Record checks in:
 
 ```md
 # Frame review
@@ -466,7 +482,7 @@ The CLI added in Task 7 must support `tsx src/cli.ts contact-sheet`; run it and 
 
 ```bash
 git add assets/frames
-git commit -m "art: add Blueflame native state frames"
+git commit -m "art: add BLACK★ROCK SHOOTER native state frames"
 ```
 
 ---
@@ -574,7 +590,7 @@ Expected: test PASS; `file dist/blueflame/spritesheet.webp` reports WebP; Sharp 
 
 ```bash
 git add src/assemble-spritesheet.ts tests/assemble-spritesheet.test.ts dist/blueflame/spritesheet.webp
-git commit -m "feat: assemble Blueflame v2 spritesheet"
+git commit -m "feat: assemble BLACK★ROCK SHOOTER v2 spritesheet"
 ```
 
 ---
@@ -600,7 +616,7 @@ import { createManifest } from "../src/manifest.js";
 
 it("creates the native v2 manifest", () => {
   expect(createManifest()).toEqual({
-    displayName: "Blueflame",
+    displayName: "BLACK★ROCK SHOOTER",
     description: "A cool-headed blue-flame swordswoman who tracks your Codex tasks.",
     spriteVersionNumber: 2,
     spritesheetPath: "spritesheet.webp",
@@ -648,7 +664,7 @@ import { writeFile } from "node:fs/promises";
 
 export function createManifest() {
   return {
-    displayName: "Blueflame",
+    displayName: "BLACK★ROCK SHOOTER",
     description: "A cool-headed blue-flame swordswoman who tracks your Codex tasks.",
     spriteVersionNumber: 2,
     spritesheetPath: "spritesheet.webp",
@@ -714,7 +730,7 @@ Expected: tests PASS; `dist/blueflame/pet.json` matches the approved manifest.
 
 ```bash
 git add src/manifest.ts src/install-pet.ts tests/manifest.test.ts tests/install-pet.test.ts dist/blueflame/pet.json
-git commit -m "feat: install Blueflame Pet atomically"
+git commit -m "feat: install BLACK★ROCK SHOOTER Pet atomically"
 ```
 
 ---
@@ -860,7 +876,7 @@ Expected: test PASS; validation prints `73 frames valid; 0 errors`; build exits 
 
 ```bash
 git add src/cli.ts src/contact-sheet.ts tests/cli.test.ts work/frame-review/contact-sheet.png
-git commit -m "feat: add Blueflame build and review CLI"
+git commit -m "feat: add BLACK★ROCK SHOOTER build and review CLI"
 ```
 
 ---
@@ -966,7 +982,7 @@ Expected: PASS. Then capture screenshots for all nine states at 80, 113, and 224
 
 ```bash
 git add preview tests/preview.spec.ts playwright.config.ts work/preview-evidence
-git commit -m "test: verify Blueflame states and native size range"
+git commit -m "test: verify BLACK★ROCK SHOOTER states and native size range"
 ```
 
 ---
@@ -1004,7 +1020,7 @@ Expected: output begins `Installed to` and ends with `/.codex/pets/blueflame`. T
 
 - [ ] **Step 3: Verify in Codex Settings**
 
-Open `Settings → Pets`, click `Refresh`, select `Blueflame`, and click `Wake Pet`. Verify that the Pet appears in the native selector and floating overlay. This UI verification requires the user because Codex blocks Computer Use from controlling its own app.
+Open `Settings → Pets`, click `Refresh`, select `BLACK★ROCK SHOOTER`, and click `Wake Pet`. Verify that the Pet appears in the native selector and floating overlay. This UI verification requires the user because Codex blocks Computer Use from controlling its own app.
 
 - [ ] **Step 4: Verify real task-state transitions**
 
@@ -1017,7 +1033,7 @@ Move `Pet size` to 80 px, default, and 224 px. Confirm the complete body remains
 - [ ] **Step 6: Record final evidence**
 
 ```md
-# Blueflame Pet verification — 2026-07-17
+# BLACK★ROCK SHOOTER Pet verification — 2026-07-17
 
 - Typecheck: pass
 - Unit tests: pass
@@ -1036,5 +1052,5 @@ Move `Pet size` to 80 px, default, and 224 px. Confirm the complete body remains
 
 ```bash
 git add docs/verification/2026-07-17-blueflame-pet.md assets/frames/frame-review.md
-git commit -m "docs: verify Blueflame Pet end to end"
+git commit -m "docs: verify BLACK★ROCK SHOOTER Pet end to end"
 ```

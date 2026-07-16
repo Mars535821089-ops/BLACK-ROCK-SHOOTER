@@ -1,0 +1,149 @@
+{
+  "source": {
+    "beforeRoot": "work/task-10/before/spritesheet.webp",
+    "afterRoot": "assets/frames"
+  },
+  "frameCount": 73,
+  "sizes": [
+    192,
+    224,
+    80
+  ],
+  "greenCandidateMethod": {
+    "region": "entire transparent frame after cubic evidence resampling; alpha >= 9",
+    "threshold": "g > r + 25 and g > b + 20",
+    "interpretation": "candidate count only; inspect alpha bins and real Playwright screenshot QA before labeling fringe"
+  },
+  "before": {
+    "80": {
+      "averageBBoxWidth": 44.64383561643836,
+      "averageBBoxHeight": 75.89041095890411,
+      "averageBBoxArea": 3232.5068493150684,
+      "averageOccupiedPixels": 1500.109589041096,
+      "averageAntialiasedPixels": 777.5753424657535,
+      "minimumMargin": 0,
+      "edgeStrength": 48.596430163551965,
+      "interiorDetail": 61.203457721536196,
+      "greenDominantPixels": 39,
+      "greenAlphaBins": {
+        "alpha9To32": 39,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 0
+    },
+    "192": {
+      "averageBBoxWidth": 105.04109589041096,
+      "averageBBoxHeight": 179.56164383561645,
+      "averageBBoxArea": 17966.383561643837,
+      "averageOccupiedPixels": 7756.986301369863,
+      "averageAntialiasedPixels": 2846.890410958904,
+      "minimumMargin": 1,
+      "edgeStrength": 38.58501841263122,
+      "interiorDetail": 37.25597032103488,
+      "greenDominantPixels": 448,
+      "greenAlphaBins": {
+        "alpha9To32": 433,
+        "alpha33To64": 15,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 966180
+    },
+    "224": {
+      "averageBBoxWidth": 123.31506849315069,
+      "averageBBoxHeight": 210.4931506849315,
+      "averageBBoxArea": 24743.23287671233,
+      "averageOccupiedPixels": 10793.315068493152,
+      "averageAntialiasedPixels": 4287.698630136986,
+      "minimumMargin": 0,
+      "edgeStrength": 33.47319974779513,
+      "interiorDetail": 26.498370309039217,
+      "greenDominantPixels": 583,
+      "greenAlphaBins": {
+        "alpha9To32": 571,
+        "alpha33To64": 12,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 0
+    }
+  },
+  "after": {
+    "80": {
+      "averageBBoxWidth": 45.52054794520548,
+      "averageBBoxHeight": 77.67123287671232,
+      "averageBBoxArea": 3376.3698630136987,
+      "averageOccupiedPixels": 1540.4383561643835,
+      "averageAntialiasedPixels": 764.6575342465753,
+      "minimumMargin": 1,
+      "edgeStrength": 50.832475347690306,
+      "interiorDetail": 63.96948340773058,
+      "greenDominantPixels": 59,
+      "greenAlphaBins": {
+        "alpha9To32": 59,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 0
+    },
+    "192": {
+      "averageBBoxWidth": 107.28767123287672,
+      "averageBBoxHeight": 182.8904109589041,
+      "averageBBoxArea": 18712.23287671233,
+      "averageOccupiedPixels": 7719.602739726028,
+      "averageAntialiasedPixels": 2260.4383561643835,
+      "minimumMargin": 4,
+      "edgeStrength": 45.41854849910444,
+      "interiorDetail": 46.89356894640184,
+      "greenDominantPixels": 0,
+      "greenAlphaBins": {
+        "alpha9To32": 0,
+        "alpha33To64": 0,
+        "alpha65To128": 0,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 0
+    },
+    "224": {
+      "averageBBoxWidth": 125.87671232876713,
+      "averageBBoxHeight": 214.04109589041096,
+      "averageBBoxArea": 25707.383561643837,
+      "averageOccupiedPixels": 10872.72602739726,
+      "averageAntialiasedPixels": 3742.6164383561645,
+      "minimumMargin": 4,
+      "edgeStrength": 38.84862848399363,
+      "interiorDetail": 32.570626442554754,
+      "greenDominantPixels": 419,
+      "greenAlphaBins": {
+        "alpha9To32": 372,
+        "alpha33To64": 43,
+        "alpha65To128": 4,
+        "alpha129To255": 0
+      },
+      "transparentRgbPixels": 0
+    }
+  },
+  "comparison": {
+    "80": {
+      "bboxAreaPercent": 4.450509168421816,
+      "occupiedPixelsPercent": 2.688388062972568,
+      "edgeStrengthPercent": 4.601253994610096,
+      "interiorDetailPercent": 4.519394474049587
+    },
+    "192": {
+      "bboxAreaPercent": 4.151360303031681,
+      "occupiedPixelsPercent": -0.4819340938791352,
+      "edgeStrengthPercent": 17.71031962041565,
+      "interiorDetailPercent": 25.86860184373062
+    },
+    "224": {
+      "bboxAreaPercent": 3.8966237343986734,
+      "occupiedPixelsPercent": 0.7357420625653578,
+      "edgeStrengthPercent": 16.05890317238817,
+      "interiorDetailPercent": 22.91558334606015
+    }
+  }
+}
