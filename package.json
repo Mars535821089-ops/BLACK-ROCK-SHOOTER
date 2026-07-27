@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run --exclude tests/preview.spec.ts --exclude 'work/**'",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "render:frames": "tsx scripts/generate-supersampled-frames.mjs",
     "build:pet": "tsx src/cli.ts build",
