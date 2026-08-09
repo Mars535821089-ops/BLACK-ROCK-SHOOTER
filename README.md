@@ -1,3 +1,6 @@
+> ⭐ 如果这个项目对你有帮助，欢迎点个 Star 支持一下！制作与维护不易，也欢迎通过赞助支持项目持续更新。
+> ⭐ If this project helps you, a Star is appreciated. Ongoing development and maintenance take time, and sponsorship is welcome.
+
 # BLACK★ROCK SHOOTER — Codex Pet
 
 一个可显示 Codex 任务状态的自定义 Pet。角色会根据空闲、运行、等待、检查、失败等状态切换动画；武器只在对应动作中出现。
