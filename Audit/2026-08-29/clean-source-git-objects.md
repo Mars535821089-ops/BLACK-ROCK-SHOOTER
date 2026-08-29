@@ -1,0 +1,42 @@
+# 清理后源码对象清单
+
+> 本轮零删除；以下 Git blob 哈希既是基线源码，也是清理后完整源码的逐文件身份。
+
+```text
+100755 blob 1ca44bba0b0fa89c17741b68e2268983c78675db	install.sh
+100644 blob 08eac61e664cd233bee882fc919384ef9c48510b	package-lock.json
+100644 blob af8f2891b028405cf5c4c88f0ee0c44a2cb8ab63	package.json
+100644 blob 9a6ada87a954cf5342024d61aeb06fdfb6b1782d	playwright.config.ts
+100644 blob 2511e5a578f05bdf21fd5173673ec5df0cadadf7	preview/index.html
+100644 blob 0d0c63d08382225ae275cde614ad56ecf14e2fbf	preview/main.ts
+100644 blob bcddc2b7afd12d54f559f0509a081fa4b87aaf72	scripts/analyze-preview-pixels.mjs
+100644 blob 5e6aebfaf7f462e193f3936b3cfca4314cbfd02d	scripts/compare-frame-quality.mjs
+100644 blob f3074d5623067f300cc9be5d09b512fc50c71318	scripts/create-quality-evidence.mjs
+100644 blob 189526224010b0be637a6fb9d9cb3ba4543d51bb	scripts/generate-supersampled-frames.mjs
+100644 blob 4c3673b96ae6bb1e5355e70edab9195850aba4ff	scripts/native-pet-patcher.ts
+100644 blob 6eaf9728aba1f563898c578866a0c32986dac3dc	src/assemble-spritesheet.ts
+100644 blob cc89f156b876e10bf618d54b0925564dd97b52e0	src/cli.ts
+100644 blob b07b1e306c1d7b93e0ecd5fe54d65360af4e1aff	src/contact-sheet.ts
+100644 blob c2408f40adef0c0daca3873e608b05a62a93e974	src/install-pet.ts
+100644 blob 9ce66830fcd701fdbfe7248c1ea95261ca721a82	src/manifest.ts
+100644 blob a958ff2ade5ec9e04cf6938b9cdb22dad3c07528	src/native-pet-bundle.ts
+100644 blob 0e4933901f82b5362924c30fe2770d8fd1c89091	src/native-pet-patch.ts
+100644 blob 139a9edd4f148ea6980bedced3a8aad019df37d8	src/pet-spec.ts
+100644 blob b8470639795f5b56fa6c240c04272ab0cc70fb6b	src/pixel-qa.ts
+100644 blob c45edef845424ff2a64dd330fc6d135d1c1ff010	src/supersample-frame.ts
+100644 blob 66ee515d6339b4504cca369772abe0c1678ed2c8	src/validate-frame.ts
+100644 blob a9d9c9309e49ca5c29c4fc4e4a3b3b188051a853	tests/assemble-spritesheet.test.ts
+100644 blob 9e60e8abe34f3b74824f3f0e3a8f0c8f8b51106c	tests/cli.test.ts
+100644 blob 3c938cc16a45ac7bd4efd455235abac9ca7283b6	tests/frame-quality.test.ts
+100644 blob 52c874fda29cc69c661caf07885786654574d80b	tests/install-pet.test.ts
+100644 blob 22dd609cfad51ac48794d8e7e5883030c85af983	tests/manifest.test.ts
+100644 blob 6c1a3f646881e1f0ec7281f357cd4a7d12c8db08	tests/native-pet-bundle.test.ts
+100644 blob 697181e33b61aeb40c1e91a2840e56dcd5e11979	tests/native-pet-patch.test.ts
+100644 blob 34e4851e2d95952f421425b7326723b77fdeb2e7	tests/pet-spec.test.ts
+100644 blob 571bf892303f2beb55101db1c61e02ce6f2e54ca	tests/pixel-qa.test.ts
+100644 blob 069fab97fd0d7a57318df410be6f0eba2d7f32da	tests/preview.spec.ts
+100644 blob d914038a978934ad89080a6347a604ad429f4786	tests/supersample-frame.test.ts
+100644 blob a05f10a4a3cc601d5daf8ef2142bc867adeded8f	tests/validate-frame.test.ts
+100644 blob ddc236878b36bfe43953045e492c05670b05c697	tsconfig.json
+100644 blob 4a61cf5f8c92a2ef39944d4d38fbe5a31857616b	vitest.config.ts
+```
