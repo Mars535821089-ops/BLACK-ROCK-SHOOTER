@@ -7,7 +7,6 @@
     "typecheck": "tsc --noEmit",
     "render:frames": "tsx scripts/generate-supersampled-frames.mjs",
     "build:pet": "tsx src/cli.ts build",
-    "build:web-pet": "node scripts/export-web-pet.mjs",
     "validate:pet": "tsx src/cli.ts validate",
     "install:pet": "tsx src/cli.ts install",
     "capture:evidence": "tsx src/cli.ts contact-sheet && playwright test tests/preview.spec.ts --grep \"maps every state row|captures every state at the native review sizes\" && tsx scripts/analyze-preview-pixels.mjs",
