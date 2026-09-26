@@ -40,6 +40,19 @@ chmod +x install.sh
 
 因此换电脑后只需重新下载仓库或 Release，再运行一次安装脚本。
 
+## ChatGPT 网页版上传
+
+网页版使用单独的精灵图：[下载 BLACK★ROCK SHOOTER 网页版 WebP](dist/web/BLACK-ROCK-SHOOTER.webp)。在 ChatGPT 网页版打开 **设置 → 虚拟宠物 → 上传虚拟宠物**，选择下载的 WebP 文件。它不会自动从桌面版同步到网页。
+
+网页版文件为 1536 × 1872、透明背景、8 × 9 网格；保留桌面版前 9 行状态动画。桌面版使用的 1536 × 2288 精灵图及额外两行视线动画不变。网页版实际动画效果仍需在上传后确认。
+
+从源码重新导出网页版文件：
+
+```bash
+npm ci
+npm run build:web-pet
+```
+
 ## 显示规格
 
 - Codex Pet Sprite v2
